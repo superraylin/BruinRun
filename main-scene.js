@@ -40,7 +40,7 @@ class Assignment_Three_Scene extends Scene_Component
             ring:     context.get_instance( Ring_Shader  ).material(),
             ice_gray: context.get_instance( Phong_Shader ).material(Color.of(0.745,0.764,0.776,1), {ambient:0, diffusivity:1, specularity:0}),
             swampy:   context.get_instance( Phong_Shader ).material(Color.of(0.01,0.196,0.125,1), {ambient:0, diffusivity:0.4, specularity:1}),
-            muddy:    context.get_instance( Phong_Shader ).material(Color.of(0.65,0.37,0.18,1), {ambient:0, diffusivity:1, specularity:1}),
+            muddy:    context.get_instance( Phong_Shader ).material(Color.of(0.65,0.37,0.18,1), {ambient:0.5, diffusivity:1, specularity:1}),
             lt_blue:  context.get_instance( Phong_Shader ).material(Color.of(0.15,0,0.69,1), {ambient:0, diffusivity:1, specularity:0.8}),
             lt_gray:  context.get_instance( Phong_Shader ).material(Color.of(0.83,0.83,0.83,1), {ambient:0.5, diffusivity:1, specularity:1}),
 
@@ -52,38 +52,17 @@ class Assignment_Three_Scene extends Scene_Component
         this.last_xcoord = 0;
         this.last_zcoord = 0;
         this.attached = () => Mat4.identity();
-        this.moveleft = Mat4.translation([2,0,0]);
-        this.moveright = Mat4.translation([-2,0,0]);
-        this.map= [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+        this.moveleft = Mat4.translation([-2,0,0]);
+        this.moveright = Mat4.translation([2,0,0]);
+        this.moveup = Mat4.translation([0,2,0]);
+        this.map= []
       }
     make_control_panel()            // Draw the scene's buttons, setup their actions and keyboard shortcuts, and monitor live measurements.
-      { this.key_triggered_button( "View solar system",  [ "0" ], () => this.attached = () => this.initial_camera_location );
-        this.new_line();
-        this.key_triggered_button( "Attach to planet 1", [ "1" ], () => this.attached = () => this.moveleft , null,() => this.attached = () => Mat4.identity() );
-        this.key_triggered_button( "Attach to planet 2", [ "2" ], () => this.attached = () => Mat4.identity()); this.new_line();
-        this.key_triggered_button( "Attach to planet 3", [ "3" ], () => this.attached = () => this.moveright, null,() => this.attached = () => Mat4.identity());
-        this.key_triggered_button( "Attach to planet 4", [ "4" ], () => this.attached = () => this.planet_4 ); this.new_line();
-        this.key_triggered_button( "Attach to planet 5", [ "5" ], () => this.attached = () => this.planet_5 );
-        this.key_triggered_button( "Attach to moon",     [ "m" ], () => this.attached = () => this.moon     );
+      { //this.key_triggered_button( "View solar system",  [ "0" ], () => this.attached = () => this.initial_camera_location );
+        this.key_triggered_button( "left", [ "1" ], () => this.attached = () => this.moveleft , null,() => this.attached = () => Mat4.identity() );
+        this.key_triggered_button( "jump", [ "2" ], () => this.attached = () => this.moveup ,   null,() => this.attached = () => Mat4.identity() );
+        this.key_triggered_button( "right", [ "3" ],() => this.attached = () => this.moveright, null,() => this.attached = () => Mat4.identity());
+
       }
 
     display( graphics_state )
@@ -95,7 +74,11 @@ class Assignment_Three_Scene extends Scene_Component
 
 
         //ground
-        this.shapes.box.draw(graphics_state, Mat4.identity().times(Mat4.scale([20,1,20])), this.materials.test);
+        this.shapes.box.draw(graphics_state, Mat4.scale([20,1,20]), this.materials.test);
+        this.shapes.box.draw(graphics_state, Mat4.translation([0,1,15]).times(Mat4.scale([16,1,1])),this.materials.muddy);
+        this.shapes.box.draw(graphics_state, Mat4.translation([0,1,-15]).times(Mat4.scale([16,1,1])),this.materials.muddy);
+        this.shapes.box.draw(graphics_state, Mat4.translation([15,1,0]).times(Mat4.scale([1,1,16])),this.materials.muddy);
+        this.shapes.box.draw(graphics_state, Mat4.translation([-15,1,-0]).times(Mat4.scale([1,1,16])),this.materials.muddy);
 
         let human_transform  = Mat4.identity();
 
@@ -106,33 +89,31 @@ class Assignment_Three_Scene extends Scene_Component
         switch(this.move_dir){
           case '+x':this.last_xcoord+= dt*10;
                     if(this.last_xcoord>=15) this.move_dir = '+z';
-                    this.camera_rotation = Mat4.rotation(Math.PI/2,Vec.of(0,1,0));
+                    this.camera_rotation = Mat4.rotation(Math.PI/2,Vec.of(0,-1,0));
                     break;
 
           case '-x':this.last_xcoord-= dt*10;
                     if(this.last_xcoord<=-15) this.move_dir = '-z';
-                    this.camera_rotation = Mat4.rotation(-Math.PI/2,Vec.of(0,1,0));
+                    this.camera_rotation = Mat4.rotation(Math.PI/2,Vec.of(0,1,0));
                     break;
 
           case '+z':this.last_zcoord+= dt*10;
                     if(this.last_zcoord>=15) this.move_dir = '-x';
-                    this.camera_rotation = Mat4.identity();
+                    this.camera_rotation = Mat4.rotation(Math.PI,Vec.of(0,1,0));
                     break;
 
           case '-z':this.last_zcoord-= dt*10;
                     if(this.last_zcoord<= -15) this.move_dir = '+x';
-                    this.camera_rotation = Mat4.rotation(Math.PI,Vec.of(0,1,0));
+                    this.camera_rotation = Mat4.identity();
                     break;
         }
 
-        human_transform = human_transform.times(Mat4.translation([ this.last_xcoord ,2,this.last_zcoord])).times(this.camera_rotation).times(this.attached());
+        human_transform = human_transform.times(Mat4.translation([ this.last_xcoord ,3,this.last_zcoord])).times(this.camera_rotation).times(this.attached());
+
         this.shapes.torus2.draw(graphics_state,human_transform,this.materials.lt_gray);
-
-        //this.shapes.ball.draw(graphics_state,human_transform.times(Mat4.translation([0,0,-2])),this.materials.lt_gray)
-        //console.log(this.move_dir);
-
+        this.shapes.ball.draw(graphics_state,human_transform.times(Mat4.translation([0,0,1])),this.materials.lt_gray  )
         /*****camera control*****/
-        let desired = human_transform.times(Mat4.translation([0,5 ,-4])).times(Mat4.rotation(Math.PI,Vec.of(0,1,0))).times(Mat4.rotation(-Math.PI/6,Vec.of(1,0,0)));
+        let desired = human_transform.times(Mat4.translation([0,5 ,4])).times(Mat4.rotation(-Math.PI/6,Vec.of(1,0,0)));
         desired = Mat4.inverse(desired);
         desired = desired.map( (x,i) => Vec.from( graphics_state.camera_transform[i] ).mix( x, 0.05 ) )
         graphics_state.camera_transform = desired;

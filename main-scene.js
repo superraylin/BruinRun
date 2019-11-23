@@ -85,7 +85,7 @@ class Assignment_Three_Scene extends Scene_Component
           index = i;
         }
       }
-      if(index !== -1) this.obsticle_list.splice(index,1);
+      return index;
     }
 
 
@@ -95,8 +95,7 @@ class Assignment_Three_Scene extends Scene_Component
         const t = graphics_state.animation_time / 1000, dt = graphics_state.animation_delta_time / 1000;
 
 
-
-        //User input control
+        /**********User Input control********/
         let track_idx = 1;
         //select track base on input
         if(this.left_f){
@@ -154,26 +153,42 @@ class Assignment_Three_Scene extends Scene_Component
 
 
 
-        //draw main character
-        this.bruin(this.coord,theta,graphics_state);
-
 
         //create obsticle param list
         if(this.obsticle_list.length<5){
           let rand = Math.random()
           let r_sign = Math.random()>0.5? -1: 1;
-          let locs = [];
+          let locs = [0,3,0];
 
-          if(Math.random()>0.5){
-            locs = [r_sign*rand*15,3,15 *(Math.random()>0.5? -1: 1)]
-          }else{
-            locs = [15*(Math.random()>0.5? -1: 1),3,15*rand*r_sign]
-          };
-          //if(Math.random()>0.5)
-          let ob_param = { location: locs,
-                            bounding: 2,
-                            goodbad: rand>0.5};
-          this.obsticle_list.push(ob_param);
+          let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
+          let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
+          let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
+          //console.log(rand_track,rand_corner,rand_nxcorner)
+          let track_change = Vec.from(this.corner[rand_track][rand_nxcorner]).minus(Vec.from(this.corner[rand_track][rand_corner]));
+          track_change = track_change.times(rand).times(r_sign).times(0.5);
+          if(track_change[2] ===0) {
+            locs[2] = this.corner[rand_track][rand_nxcorner][2];
+            locs[0] = track_change[0]
+          }
+          else {
+            locs[0] = this.corner[rand_track][rand_nxcorner][0];
+            locs[2] = track_change[2]
+          }
+
+
+          // if(Math.random()>0.5){
+          //   locs = [r_sign*rand*15,3,15 *(Math.random()>0.5? -1: 1)]
+          // }else{
+          //   locs = [15*(Math.random()>0.5? -1: 1),3,15*rand*r_sign]
+          // };
+          // check if new obsiticle collide with old one
+          if(this.collision_test(locs) === -1){
+            let ob_param = { location: locs,
+                              bounding: 2,
+                              goodbad: rand>0.5};
+
+            this.obsticle_list.push(ob_param);
+          }
         }
 
         /*****draw all compoent*******/
@@ -182,15 +197,17 @@ class Assignment_Three_Scene extends Scene_Component
           _this.obstacle(item.location,0,graphics_state,item.bounding,item.goodbad);
         });
 
+        //draw main character
+        this.bruin(this.coord,theta,graphics_state);
 
 
 
+        //collision test and remove collided item
+        let collide_idx = this.collision_test(this.coord);
+        if(collide_idx !== -1) this.obsticle_list.splice(collide_idx,1);
 
-        //collision test
-        this.collision_test(this.coord);
         $("#score").text("score:" + String(this.score));
 
-        console.log(this.score);
 
         //ground
         this.shapes.box.draw(graphics_state, Mat4.scale([20,1,20]), this.materials.test);

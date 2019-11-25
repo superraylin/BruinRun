@@ -37,9 +37,6 @@ class Assignment_Three_Scene extends Scene_Component
         this.lights = [ new Light( Vec.of( 5,-10,5,1 ), Color.of( 0, 1, 1, 1 ), 1000 ) ];
         this.coord = [15,3,0];
         this.jump_t = 0;
-        this.jp_finish = 0;
-
-        this.flag_up =0; //indicate if
         this.c_idx = 0; //last corner index
 
 
@@ -62,6 +59,36 @@ class Assignment_Three_Scene extends Scene_Component
         //model = model.times(this.attached());
         this.shapes.torus2.draw(graphics_state,model,this.materials.test);
         this.shapes.ball.draw(graphics_state,model.times(Mat4.translation([0,0,1])),this.materials.lt_gray  )
+    }
+    create_obstacle(){
+      if(this.obsticle_list.length<5){
+        let rand = Math.random()
+        let r_sign = Math.random()>0.5? -1: 1;
+        let locs = [0,3,0];
+
+        let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
+        let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
+        let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
+
+        let track_change = Vec.from(this.corner[rand_track][rand_nxcorner]).minus(Vec.from(this.corner[rand_track][rand_corner]));
+        track_change = track_change.times(rand).times(r_sign).times(0.5);
+        if(track_change[2] ===0) {
+          locs[2] = this.corner[rand_track][rand_nxcorner][2];
+          locs[0] = track_change[0]
+        }
+        else {
+          locs[0] = this.corner[rand_track][rand_nxcorner][0];
+          locs[2] = track_change[2]
+        }
+
+        if(this.collision_test(locs) === -1){
+          let ob_param = { location: locs,
+                            bounding: 2,
+                            goodbad: rand>0.5};
+
+          this.obsticle_list.push(ob_param);
+        }
+      }
     }
 
     //locations, orientation, ..., bounding box size, good_or_bad
@@ -151,45 +178,7 @@ class Assignment_Three_Scene extends Scene_Component
         }
 
 
-
-
-
-        //create obsticle param list
-        if(this.obsticle_list.length<5){
-          let rand = Math.random()
-          let r_sign = Math.random()>0.5? -1: 1;
-          let locs = [0,3,0];
-
-          let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
-          let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
-          let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
-          //console.log(rand_track,rand_corner,rand_nxcorner)
-          let track_change = Vec.from(this.corner[rand_track][rand_nxcorner]).minus(Vec.from(this.corner[rand_track][rand_corner]));
-          track_change = track_change.times(rand).times(r_sign).times(0.5);
-          if(track_change[2] ===0) {
-            locs[2] = this.corner[rand_track][rand_nxcorner][2];
-            locs[0] = track_change[0]
-          }
-          else {
-            locs[0] = this.corner[rand_track][rand_nxcorner][0];
-            locs[2] = track_change[2]
-          }
-
-
-          // if(Math.random()>0.5){
-          //   locs = [r_sign*rand*15,3,15 *(Math.random()>0.5? -1: 1)]
-          // }else{
-          //   locs = [15*(Math.random()>0.5? -1: 1),3,15*rand*r_sign]
-          // };
-          // check if new obsiticle collide with old one
-          if(this.collision_test(locs) === -1){
-            let ob_param = { location: locs,
-                              bounding: 2,
-                              goodbad: rand>0.5};
-
-            this.obsticle_list.push(ob_param);
-          }
-        }
+        this.create_obstacle();
 
         /*****draw all compoent*******/
         let _this  = this;

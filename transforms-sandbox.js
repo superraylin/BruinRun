@@ -5,32 +5,17 @@ const { Vector,vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture,
 const { Torus,Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } = defs;
 
 export class Transforms_Sandbox_Base extends Scene
-{                                          // **Transforms_Sandbox_Base** is a Scene that can be added to any display canvas.
-                                           // This particular scene is broken up into two pieces for easier understanding.
-                                           // The piece here is the base class, which sets up the machinery to draw a simple
-                                           // scene demonstrating a few concepts.  A subclass of it, Transforms_Sandbox,
-                                           // exposes only the display() method, which actually places and draws the shapes,
-                                           // isolating that code so it can be experimented with on its own.
+{
   constructor()
     {                  // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
       super();
-      //this.hover = this.swarm = false;
-                                                        // At the beginning of our program, load one of each of these shape
-                                                        // definitions onto the GPU.  NOTE:  Only do this ONCE per shape it
-                                                        // would be redundant to tell it again.  You should just re-use the
-                                                        // one called "box" more than once in display() to draw multiple cubes.
-                                                        // Don't define more than one blueprint for the same thing here.
+
       this.shapes = { "torus":  new Torus(15,15),
-                       //torus2: new ( Torus.prototype.make_flat_shaded_version() )( 15, 15 ),
                        "box": new Cube(),
                        "ball": new Subdivision_Sphere(4),
 
                      }
-                                                  // *** Materials: *** Define a shader, and then define materials that use
-                                                  // that shader.  Materials wrap a dictionary of "options" for the shader.
-                                                  // Here we use a Phong shader and the Material stores the scalar
-                                                  // coefficients that appear in the Phong lighting formulas so that the
-                                                  // appearance of particular materials can be tweaked via these numbers.
+
       const phong = new defs.Phong_Shader();
 
 
@@ -264,11 +249,8 @@ export class Transforms_Sandbox_Base extends Scene
 
       //road
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
-
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,-25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
-
       this.shapes.box.draw(context, program_state, Mat4.translation(25,7.5,0).times(Mat4.scale(6,1,28)),this.materials.muddy);
-
       this.shapes.box.draw(context, program_state, Mat4.translation(-25,1.5,-0).times(Mat4.scale(6,1,28)),this.materials.muddy);
 
       //camera matrix

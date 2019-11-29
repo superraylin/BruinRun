@@ -10,14 +10,16 @@ export class Transforms_Sandbox_Base extends Scene
     {                  // constructor(): Scenes begin by populating initial values like the Shapes and Materials they'll need.
       super();
 
+      this.widget_options = {show_explanation: false ,make_code_nav: false};
+
       this.shapes = { "torus":  new Torus(15,15),
                        "box": new Cube(),
                        "ball": new Subdivision_Sphere(4),
 
                      }
 
-      const phong = new defs.Phong_Shader();
-
+      const phong = new defs.Phong_Shader(1);
+      const bump = new defs.Fake_Bump_Map(1);
 
       this.materials =
         { test:     new Material(phong,{ ambient: .2, diffusivity: 1, specularity: 0, color: color( 1,1,0,1 ) } ),
@@ -32,6 +34,8 @@ export class Transforms_Sandbox_Base extends Scene
           lt_blue:  new Material(phong,{ ambient:0, diffusivity:1, specularity:0.8, color: color(0.15,0,0.69,1) } ),
 
           lt_gray:new Material(phong,{ ambient:0.5, diffusivity:1, specularity:1, color: color(0.83,0.83,0.83,1) } ),
+          road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
+          grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
 
 
 
@@ -40,27 +44,42 @@ export class Transforms_Sandbox_Base extends Scene
         this.coord = [15,3,0];
         this.jump_t = 0;
         this.c_idx = 0; //last corner index
-        // this.corner= [[[13,0,13],[13,0,-13],[-13,0,-13],[-13,0,13]],
-        //               [[15,0,15],[15,0,-15],[-15,0,-15],[-15,0,15]],
-        //               [[17,0,17],[17,0,-17],[-17,0,-17],[-17,0,17]]];
-
-        this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
-                      [[25,10,25],[25,10,-25],[-25,3,-25],[-25,3,25]],
-                      [[27,10,27],[27,10,-27],[-27,3,-27],[-27,3,27]]];
-
+        // this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
+        //               [[25,10,25],[25,10,-25],[-25,3,-25],[-25,3,25]],
+        //               [[27,10,27],[27,10,-27],[-27,3,-27],[-27,3,27]]];
+        this.corner= [[[23,10,21],[23,10,-23],[-23,3,-23],[-47,3,-23],[-47,3,21],[-23,3,21]],
+                      [[25,10,23],[25,10,-25],[-25,3,-25],[-49,3,-25],[-49,3,23],[-25,3,23]],
+                      [[27,10,25],[27,10,-27],[-27,3,-27],[-51,3,-27],[-51,3,25],[-27,3,25]]];
         this.obsticle_list = [] //store all collision obsticle_list item.
         this.score = 0
     }
   make_control_panel()
     {
-      this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , null,() => {this.left_f =  0;} );
-      this.key_triggered_button( "jump", [ "2" ], () => this.up_f = 1     , null,() => {} );
-      this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , null,() => {this.right_f = 0;});
+      this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , "green",() => {this.left_f =  0;} );
+      this.key_triggered_button( "jump", [ "2" ], () => this.up_f = 1     , "green",() => {} );
+      this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , "green",() => {this.right_f = 0;});
     }
 
+  calc_height(nc_idx,c_idx,track_idx,x_loc){
+    let base_height = 0;
+    let height_diff = this.corner[track_idx][nc_idx][1] -this.corner[track_idx][c_idx][1];
+    let base_dist = this.corner[0][nc_idx][0] -this.corner[0][c_idx][0]; //calcuate distance of inner track
 
-  create_obstacle(){
-      if(this.obsticle_list.length<5){
+    if(height_diff != 0){
+      let low_plane_idx = (Math.sign(height_diff) == -1) ? nc_idx:c_idx ; //choose lower plane as reference
+
+      base_height = (x_loc-this.corner[0][low_plane_idx][0])/Math.abs(base_dist)* Math.abs(height_diff)+3;
+    }else base_height = this.corner[track_idx][nc_idx][1];
+
+    if(base_height>10) base_height =10;
+    if(base_height<3) base_height =3;
+
+    return base_height;
+  }
+
+
+  create_obstacle(num_obstacles){
+      if(this.obsticle_list.length<num_obstacles){
         let rand = Math.random()
         let r_sign = Math.random()>0.5? -1: 1;
         let locs = [0,3,0];
@@ -70,15 +89,19 @@ export class Transforms_Sandbox_Base extends Scene
         let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
 
         let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
-        track_change = track_change.times(rand).times(r_sign).times(0.5);
+        track_change = track_change.times(rand); //here is the problem
+
+
         if(track_change[2] ===0) {
           locs[2] = this.corner[rand_track][rand_nxcorner][2];
-          locs[0] = track_change[0]
+          locs[0] = track_change[0]+this.corner[rand_track][rand_corner][0]
         }
         else {
           locs[0] = this.corner[rand_track][rand_nxcorner][0];
-          locs[2] = track_change[2]
+          locs[2] = track_change[2]+this.corner[rand_track][rand_corner][2]
         }
+
+        locs[1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0]);
 
         if(this.collision_test(locs) === -1){
           let ob_param = { location: locs,
@@ -155,18 +178,9 @@ export class Transforms_Sandbox_Base extends Scene
     }
 
     //calculate base height on stair
-    let base_height = 0;
-    let height_diff = this.corner[track_idx][nc_idx][1] -this.corner[track_idx][this.c_idx][1];
-    let base_dist = this.corner[0][nc_idx][0] -this.corner[0][this.c_idx][0]; //calcuate distance of inner track
 
-    if(height_diff != 0){
-      let low_plane_idx = (Math.sign(height_diff) == -1) ? nc_idx:this.c_idx ; //choose lower plane as reference
+    let base_height = this.calc_height(nc_idx,this.c_idx,track_idx,this.coord[0])
 
-      base_height = (this.coord[0]-this.corner[0][low_plane_idx][0])/Math.abs(base_dist)* Math.abs(height_diff)+3;
-    }else base_height = this.corner[track_idx][nc_idx][1];
-
-    if(base_height>10) base_height =10;
-    if(base_height<3) base_height =3;
 
     //calcualte jump
     let height = 0;
@@ -180,7 +194,7 @@ export class Transforms_Sandbox_Base extends Scene
       height = base_height;
     }
     this.coord[1] =height;
-    console.log(base_height);
+    //console.log(base_height);
 
 
     return theta;
@@ -203,14 +217,21 @@ export class Transforms_Sandbox_Base extends Scene
         else {this.shapes.ball.draw(context, program_state,model,this.materials.swampy); }
     }
 
+  drawRoad(context, program_state,model){
+
+      this.shapes.box.draw(context, program_state, model.times(Mat4.scale(6,1,6)),this.materials.road);
+      let road_model = model.times(Mat4.translation(0,0,12))
+      return road_model
+  }
+
 
   display( context, program_state )
     {
 
-                           // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
+     // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
       if( !context.scratchpad.controls )
         { this.children.push( context.scratchpad.controls = new defs.Movement_Controls() );
-          program_state.set_camera( Mat4.translation( 0,-10,-80 ).times(Mat4.rotation(Math.PI/4,1,0,0)) );
+          program_state.set_camera( Mat4.rotation(Math.PI/2,1,0,0).times(Mat4.translation( 0,-100,0 )) );
         }
 
       program_state.projection_transform = Mat4.perspective( Math.PI/4, context.width/context.height, 1, 500 );
@@ -221,9 +242,10 @@ export class Transforms_Sandbox_Base extends Scene
 
       //update location and return orientation of bruin
       let bruin_theta = this.bruin_control(dt);
-      this.create_obstacle();
-      //
+
+
       // /*****draw all obstacles*******/
+      this.create_obstacle(10); //create 10 obstacle
       let _this  = this;
       this.obsticle_list.forEach(function(item){
         _this.drawObstacle(context, program_state,item.location,0,item.bounding,item.goodbad);
@@ -242,19 +264,37 @@ export class Transforms_Sandbox_Base extends Scene
 
 
 
-      //ground
+      /*****Ground*****/
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.test);
 
-      //road
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,-25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
-      this.shapes.box.draw(context, program_state, Mat4.translation(25,7.5,0).times(Mat4.scale(6,1,28)),this.materials.muddy);
-      this.shapes.box.draw(context, program_state, Mat4.translation(-25,1.5,-0).times(Mat4.scale(6,1,28)),this.materials.muddy);
+      /*****Grass**/
+      this.shapes.box.draw(context, program_state, Mat4.translation(-37,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
 
-      //camera matrix
-      let camera_model = bruin_mat.times(Mat4.translation(0,5,5)).times(Mat4.rotation(-Math.PI/6,1,0,0));
+      /****Stair*****/
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,-25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
+
+      /******Road*****/
+
+      let road_model = Mat4.translation(25,7.5,-25);
+      for (let i = 0; i< 5; i++){
+        road_model = this.drawRoad(context, program_state,road_model);
+      }
+
+      this.drawRoad(context, program_state,Mat4.translation(-25,1.5,-25));
+      this.drawRoad(context, program_state,Mat4.translation(-25,1.5,23))
+      this.drawRoad(context, program_state,Mat4.translation(-37,1.5,-25));
+      this.drawRoad(context, program_state,Mat4.translation(-37,1.5,23))
+      road_model = Mat4.translation(-49,1.5,-25);
+      for (let i = 0; i< 5; i++){
+        road_model = this.drawRoad(context, program_state,road_model)
+      }
+
+
+      /******camera matrix******/
+      let camera_model = bruin_mat.times(Mat4.translation(0,5,5)).times(Mat4.rotation(-Math.PI/8,1,0,0));
       camera_model = Mat4.inverse(camera_model);
       camera_model = camera_model.map( (x,i) => Vector.from( program_state.camera_inverse[i] ).mix( x, 0.05 ) )
       program_state.set_camera(camera_model);

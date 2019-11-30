@@ -19,7 +19,7 @@ const { Vector, Vector3, vec, vec3, vec4, color, Matrix, Mat4, Light, Shape, Mat
 // import { Many_Lights_Demo }
 //   from "./examples/many-lights-demo.js"
 // import { Obj_File_Demo }
-//   from "./examples/obj-file-demo.js"
+//   from "./obj-file-demo.js"
 // import { Scene_To_Texture_Demo }
 //   from "./examples/scene-to-texture-demo.js"
 // import { Surfaces_Demo }
@@ -33,11 +33,12 @@ Object.assign( defs,
                      // { Axes_Viewer, Axes_Viewer_Test_Scene },
                      // { Inertia_Demo, Collision_Demo },
                      // { Many_Lights_Demo },
-                     // { Obj_File_Demo },
+//                      { Obj_File_Demo },
                      // { Scene_To_Texture_Demo },
                      // { Surfaces_Demo },
                      // { Text_Demo },
-                     { Transforms_Sandbox_Base } );
+                     { Transforms_Sandbox_Base } 
+                        );
 
     // ******************** End extra step
 

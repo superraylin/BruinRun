@@ -1,5 +1,5 @@
-import {tiny, defs} from './common.js';
-
+import {tiny, defs} from './common.js'
+import {Shape_From_File} from "./obj-file-demo.js"
                                                   // Pull these names into this module's scope for convenience:
 const { Vector,vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
 const { Torus,Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } = defs;
@@ -15,12 +15,17 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes = { "torus":  new Torus(15,15),
                        "box": new Cube(),
                        "ball": new Subdivision_Sphere(4),
+                       "bear": new Shape_From_File("./assets/bear.obj"),
+                       "skateboard": new Shape_From_File("./assets/skateboard_color.obj"),
+                       "score_point": new Subdivision_Sphere(4),
+                       "rock": new Shape_From_File("/assets/rock.obj")
 
                      }
 
       const phong = new defs.Phong_Shader(1);
       const bump = new defs.Fake_Bump_Map(1);
-
+      let rotate_count = 0;
+      this.rotate_count = rotate_count;
       this.materials =
         { test:     new Material(phong,{ ambient: .2, diffusivity: 1, specularity: 0, color: color( 1,1,0,1 ) } ),
 
@@ -33,15 +38,21 @@ export class Transforms_Sandbox_Base extends Scene
 
           lt_blue:  new Material(phong,{ ambient:0, diffusivity:1, specularity:0.8, color: color(0.15,0,0.69,1) } ),
 
-          lt_gray:new Material(phong,{ ambient:0.5, diffusivity:1, specularity:1, color: color(0.83,0.83,0.83,1) } ),
+          lt_gray:new Material(phong,{ ambient:0.5, diffusivity:0.5, specularity:0.5, color: color(0.83,0.83,0.83,1) } ),
+          lt_gold: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color(1, 0.83, 0,1)}),
           road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
           grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
-
+          skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/stars.png")}),
+          bear: new Material( bump, { ambient: 1, texture: new Texture("assets/bear-color.png")}),
+          rock: new Material (new defs.Textured_Phong( 1 ),  { color: color( 0,0,0,1 ), 
+          ambient: 1, diffusivity: .5, specularity: .5, texture: new Texture( "assets/rocktexture.png" ) })
+//           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
+// color(0.246,0.164,0.08,1
 
 
         }
 
-        this.coord = [15,3,0];
+        this.coord = [15,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
         this.jump_t = 0;
         this.c_idx = 0; //last corner index
         // this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
@@ -55,9 +66,25 @@ export class Transforms_Sandbox_Base extends Scene
     }
   make_control_panel()
     {
-      this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , "green",() => {this.left_f =  0;} );
+//       this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , "green",() => {this.left_f =  0;} );
+      this.key_triggered_button( "left", [ "1" ], () => {
+                                                          if(this.right_f > 0) 
+                                                            {this.left_f = 0 ;
+                                                             this.right_f = 0;} 
+                                                          else 
+                                                            {this.left_f=1; 
+                                                             this.right_f=0}
+                                                        });
       this.key_triggered_button( "jump", [ "2" ], () => this.up_f = 1     , "green",() => {} );
-      this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , "green",() => {this.right_f = 0;});
+//       this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , "green",() => {this.right_f = 0;});
+      this.key_triggered_button( "right", [ "3" ],() => {
+                                                          if(this.left_f > 0) 
+                                                            {this.right_f = 0; 
+                                                             this.left_f = 0} 
+                                                          else 
+                                                            {this.right_f = 1; 
+                                                             this.left_f = 0;}
+                                                         });
     }
 
   calc_height(nc_idx,c_idx,track_idx,x_loc){
@@ -66,10 +93,18 @@ export class Transforms_Sandbox_Base extends Scene
     let base_dist = this.corner[0][nc_idx][0] -this.corner[0][c_idx][0]; //calcuate distance of inner track
 
     if(height_diff != 0){
+      if(height_diff < 0) {
+        this.coord[3] = 1;
+      } else {
+        this.coord[3] = -1;
+      }
       let low_plane_idx = (Math.sign(height_diff) == -1) ? nc_idx:c_idx ; //choose lower plane as reference
 
       base_height = (x_loc-this.corner[0][low_plane_idx][0])/Math.abs(base_dist)* Math.abs(height_diff)+3;
-    }else base_height = this.corner[track_idx][nc_idx][1];
+    }else {
+      base_height = this.corner[track_idx][nc_idx][1];
+      this.coord[3] = 0;
+    }
 
     if(base_height>10) base_height =10;
     if(base_height<3) base_height =3;
@@ -180,7 +215,7 @@ export class Transforms_Sandbox_Base extends Scene
     //calculate base height on stair
 
     let base_height = this.calc_height(nc_idx,this.c_idx,track_idx,this.coord[0])
-
+//     console.log(base_height);
 
     //calcualte jump
     let height = 0;
@@ -201,20 +236,49 @@ export class Transforms_Sandbox_Base extends Scene
   }
 
   drawBruin(context, program_state,locs,ori){
+//         console.log(locs[1])
+        let s_correct = 0;
+        if(locs[1] == 10) {
+          s_correct = -1.3;
+        } else if(locs[1] == 3) {
+          s_correct = -0.3;
+        } else {
+          s_correct = -0.7;
+        }
+        let b_correct = s_correct + 1.6;
+
         let model = Mat4.identity().times(Mat4.translation(locs[0],locs[1],locs[2])).times(Mat4.rotation(ori,0,1,0));
+        let skateboard_transform = Mat4.identity().times(Mat4.translation(locs[0],locs[1],locs[2]))
+                                       .times(Mat4.translation(0, s_correct, 0))
+                                       .times(Mat4.rotation(ori,0,1,0))
+                                       .times(Mat4.rotation(Math.PI, 0,1,0))
+                                       .times(Mat4.rotation(-Math.PI / 2, 1, 0 ,0))
+                                       .times(Mat4.rotation(locs[3] * 0.1489, 1, 0, 0));
+
+        let bear_transform = Mat4.identity().times(Mat4.translation(locs[0],locs[1],locs[2]))
+                                        .times(Mat4.translation(0, b_correct, 0))
+                                        .times(Mat4.rotation(ori,0,1,0))
+                                        .times(Mat4.rotation(Math.PI, 0,1,0))
+                                        .times(Mat4.rotation(locs[3] * 0.1489, 1, 0, 0));
         //model = model.times(this.attached());
-        this.shapes.torus.draw(context,program_state,model,this.materials.test);
-        this.shapes.ball.draw(context,program_state,model.times(Mat4.translation(0,0,1)),this.materials.lt_gray );
+//         this.shapes.torus.draw(context,program_state,model,this.materials.test);
+//         this.shapes.ball.draw(context,program_state,model.times(Mat4.translation(0,0,1)),this.materials.lt_gray );
+        this.shapes.bear.draw(context, program_state, bear_transform, this.materials.bear);
+        this.shapes.skateboard.draw(context, program_state, skateboard_transform, this.materials.skateboard);
 
         return model
     }
 
   drawObstacle(context, program_state,locs,ori,rad,g_b){
         let model = Mat4.identity().times(Mat4.translation(locs[0],locs[1],locs[2])).times(Mat4.rotation(ori,0,1,0));
+        let gold_model = Mat4.identity().times(Mat4.translation(locs[0],locs[1] + 1,locs[2]))
+                                        .times(Mat4.rotation(ori,0,1,0))
+                                        .times(Mat4.scale(0.45,0.45,0.45))
+                                        .times(Mat4.rotation(this.rotate_count * Math.PI / 45, 0, 1, 0));
         if(g_b){
-          this.shapes.ball.draw(context, program_state, model,this.materials.lt_gray);
+          this.shapes.box.draw(context, program_state, gold_model,this.materials.lt_gold);
         }
-        else {this.shapes.ball.draw(context, program_state,model,this.materials.swampy); }
+        else {this.shapes.rock.draw(context, program_state,model,this.materials.rocktexture); }
     }
 
   drawRoad(context, program_state,model){
@@ -238,7 +302,7 @@ export class Transforms_Sandbox_Base extends Scene
       const t = this.t = program_state.animation_time/1000,dt = program_state.animation_delta_time / 1000;
       program_state.lights = [new Light( Vector.of( 0,50,0,1 ), color( 1,1,1,1),1000) ];
 
-
+      
 
       //update location and return orientation of bruin
       let bruin_theta = this.bruin_control(dt);
@@ -247,6 +311,7 @@ export class Transforms_Sandbox_Base extends Scene
       // /*****draw all obstacles*******/
       this.create_obstacle(10); //create 10 obstacle
       let _this  = this;
+      this.rotate_count = (this.rotate_count + 1) % 45;
       this.obsticle_list.forEach(function(item){
         _this.drawObstacle(context, program_state,item.location,0,item.bounding,item.goodbad);
       });

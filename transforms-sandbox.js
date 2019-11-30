@@ -42,10 +42,10 @@ export class Transforms_Sandbox_Base extends Scene
           lt_gold: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color(1, 0.83, 0,1)}),
           road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
           grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
-          skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/stars.png")}),
+          skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/skateboard.jpg")}),
           bear: new Material( bump, { ambient: 1, texture: new Texture("assets/bear-color.png")}),
-          rock: new Material (new defs.Textured_Phong( 1 ),  { color: color( 0,0,0,1 ), 
-          ambient: 1, diffusivity: .5, specularity: .5, texture: new Texture( "assets/rocktexture.png" ) })
+//           rocktexture: new Material(bump, { ambient: 1, texture: new Texture( "assets/rocktexture.jpg" )})
+          rocktexture: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/rocktexture.jpg" )})
 //           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
 // color(0.246,0.164,0.08,1
 
@@ -54,6 +54,10 @@ export class Transforms_Sandbox_Base extends Scene
 
         this.coord = [15,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
         this.jump_t = 0;
+        this.obstacle_count = 0;
+        this.point_count = 0;
+        this.total_obstacle = 0;
+        this.total_point =0;
         this.c_idx = 0; //last corner index
         // this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
         //               [[25,10,25],[25,10,-25],[-25,3,-25],[-25,3,25]],
@@ -113,58 +117,189 @@ export class Transforms_Sandbox_Base extends Scene
   }
 
 
-  create_obstacle(num_obstacles){
-      if(this.obsticle_list.length<num_obstacles){
-        let rand = Math.random()
-        let r_sign = Math.random()>0.5? -1: 1;
-        let locs = [0,3,0];
+  create_obstacle(num_obstacles, gold_points){
 
+      if(this.obstacle_count<num_obstacles){
+        let locs = [[0,3,0]];
+        let rand = Math.random()
         let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
         let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
         let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
-
+        let r_sign = Math.random()>0.5? -1: 1;
         let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
-        track_change = track_change.times(rand); //here is the problem
-
-
-        if(track_change[2] ===0) {
-          locs[2] = this.corner[rand_track][rand_nxcorner][2];
-          locs[0] = track_change[0]+this.corner[rand_track][rand_corner][0]
+        track_change = track_change.times(rand);
+        let type = 0;
+        if(rand <= 0.3) {
+          type = 2;  // create obstacle in three tracks.
+        } else if(rand > 0.3 && rand <= 0.9) {
+          type = 1; // create obstacle in two tracks.
+        } else {
+          type = 0; // create obstacle in one track.
         }
-        else {
-          locs[0] = this.corner[rand_track][rand_nxcorner][0];
-          locs[2] = track_change[2]+this.corner[rand_track][rand_corner][2]
+//         console.log(type);
+        switch(type) {
+          case(2):
+                  locs[1] = [0,3,0];
+                  locs[2] = [0,3,0];
+                  if(track_change[2] === 0) {
+                    for(var i = 0; i < 3; i++) {
+                      locs[i][2] = this.corner[i][rand_nxcorner][2];
+                      locs[i][0] = track_change[0]+this.corner[rand_track][rand_corner][0];
+                    }
+                  } else {
+                    for(var i = 0; i < 3; i++) {
+                      locs[i][0] = this.corner[i][rand_nxcorner][0];
+                      locs[i][2] = track_change[2]+this.corner[rand_track][rand_corner][2]
+                    }
+                  }
+                  for(var i = 0; i < 3; i++) {
+                    locs[i][1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[i][0]);
+                  }
+                  break;
+          case(1):
+                  locs[1] = [0,3,0];
+                  if(track_change[2] === 0) {
+                    for(var i = 0; i < 2; i++) {
+                      locs[i][2] = this.corner[(rand_track + Math.floor(Math.random() * 2 + 1)) % 3][rand_nxcorner][2];
+                      locs[i][0] = track_change[0]+this.corner[rand_track][rand_corner][0];
+                    }
+                  } else {
+                    for(var i = 0; i < 2; i++) {
+                      locs[i][0] = this.corner[(rand_track + Math.floor(Math.random() * 2 + 1)) % 3][rand_nxcorner][0];
+                      locs[i][2] = track_change[2]+this.corner[rand_track][rand_corner][2]
+                    }
+                  }
+                  for(var i = 0; i < 2; i++) {
+                    locs[i][1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[i][0]);
+                  }
+                  break;
+          case(0):
+                 if(track_change[2] ===0) {
+                   locs[0][2] = this.corner[rand_track][rand_nxcorner][2];
+                   locs[0][0] = track_change[0]+this.corner[rand_track][rand_corner][0]
+                 } else {
+                   locs[0][0] = this.corner[rand_track][rand_nxcorner][0];
+                   locs[0][2] = track_change[2]+this.corner[rand_track][rand_corner][2]
+                 }
+                 locs[0][1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0][0]);
+                 break;
         }
+//         if(this.collision_test(locs) === -1) {
+          let flag = true;
 
-        locs[1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0]);
-
-        if(this.collision_test(locs) === -1){
-          let ob_param = { location: locs,
-                            bounding: 2,
-                            goodbad: rand>0.5};
-
-          this.obsticle_list.push(ob_param);
-        }
-      }
+          for(var i = locs.length - 1; i >= 0; i--) {
+            if(this.collision_test(locs[i]) != -1) {
+              flag = false;
+              break;
+            }
+          }
+          if(flag) {
+            let ob_param = { location: locs, bounding:2, goodbad: 0};
+            this.obsticle_list.push(ob_param);
+            this.obstacle_count += 1;
+          }
+//         }
     }
+    if(this.point_count < gold_points) {
+      let rand = Math.random()
+      let num = Math.floor(Math.random() * 6);
+      let locs = [[0,3,0]];
+      let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
+      let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
+      let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
+      let r_sign = Math.random()>0.5? -1: 1;
+      let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
+      track_change = track_change.times(rand);
+      if(track_change[2] ===0) {
+        locs[0][2] = this.corner[rand_track][rand_nxcorner][2];
+        locs[0][0] = track_change[0]+this.corner[rand_track][rand_corner][0];
+      } else {
+        locs[0][0] = this.corner[rand_track][rand_nxcorner][0];
+        locs[0][2] = track_change[2]+this.corner[rand_track][rand_corner][2];
+      }
+        locs[0][1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0][0]);
+        if(this.collision_test(locs[0], 0) === -1) {
+          let ob = {location: locs, bounding:2, goodbad: 1};
+          this.obsticle_list.push(ob);
+          this.point_count += 1;
+        }
+    }
+  }
+  
+//         let rand = Math.random()
+//         let r_sign = Math.random()>0.5? -1: 1;
+//         let locs = [0,3,0];
+
+//         let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
+//         let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
+//         let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
+
+//         let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
+//         track_change = track_change.times(rand); //here is the problem
+
+
+//         if(track_change[2] ===0) {
+//           locs[2] = this.corner[rand_track][rand_nxcorner][2];
+//           locs[0] = track_change[0]+this.corner[rand_track][rand_corner][0]
+//         }
+//         else {
+//           locs[0] = this.corner[rand_track][rand_nxcorner][0];
+//           locs[2] = track_change[2]+this.corner[rand_track][rand_corner][2]
+//         }
+
+//         locs[1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0]);
+
+//         if(this.collision_test(locs) === -1){
+//           let ob_param = { location: locs,
+//                             bounding: 2,
+//                             goodbad: rand>0.5};
+
+//           this.obsticle_list.push(ob_param);
+//         }
+
+
+
 
     //locations, orientation, ..., bounding box size, good_or_bad
 
 
-  collision_test(test_point){
+  collision_test(test_point, bodytest=1){
       let index = -1;
       for(var i = 0; i< this.obsticle_list.length;i++){
         let rad = this.obsticle_list[i].bounding;
-        let inside = this.obsticle_list[i].location.every((n,j)=>Math.abs(n-test_point[j])<rad); //if inside bounding for all
-        if(inside && this.obsticle_list[i].goodbad){
-          this.score +=1;
-          index = i;
-        }else if(inside && !this.obsticle_list[i].goodbad){
-          this.score -=1;
-          index = i;
+        for(var j = 0; j < this.obsticle_list[i].location.length; j++) {
+          let inside = this.obsticle_list[i].location[j].every((n,p)=>Math.abs(n-test_point[p])<rad); //if inside bounding for all
+          if(inside && this.obsticle_list[i].goodbad){
+            this.score +=1;
+            index = i;
+            if(bodytest) {
+              this.point_count -= 1;
+            }
+            break
+          }else if(inside && !this.obsticle_list[i].goodbad){
+            this.score -=1;
+            if(bodytest) {
+              this.obstacle_count -= 1;
+            }
+            index = i;
+            break;
+          }
         }
       }
       return index;
+//       let index = -1;
+//       for(var i = 0; i< this.obsticle_list.length;i++){
+//         let rad = this.obsticle_list[i].bounding;
+//         let inside = this.obsticle_list[i].location.every((n,j)=>Math.abs(n-test_point[j])<rad); //if inside bounding for all
+//         if(inside && this.obsticle_list[i].goodbad){
+//           this.score +=1;
+//           index = i;
+//         }else if(inside && !this.obsticle_list[i].goodbad){
+//           this.score -=1;
+//           index = i;
+//         }
+//       }
+//       return index;
     }
   bruin_control(dt){
     /**********User Input control********/
@@ -270,15 +405,17 @@ export class Transforms_Sandbox_Base extends Scene
     }
 
   drawObstacle(context, program_state,locs,ori,rad,g_b){
-        let model = Mat4.identity().times(Mat4.translation(locs[0],locs[1],locs[2])).times(Mat4.rotation(ori,0,1,0));
-        let gold_model = Mat4.identity().times(Mat4.translation(locs[0],locs[1] + 1,locs[2]))
-                                        .times(Mat4.rotation(ori,0,1,0))
-                                        .times(Mat4.scale(0.45,0.45,0.45))
-                                        .times(Mat4.rotation(this.rotate_count * Math.PI / 45, 0, 1, 0));
-        if(g_b){
-          this.shapes.box.draw(context, program_state, gold_model,this.materials.lt_gold);
+        for(var i = 0; i < locs.length; i ++) {
+          let model = Mat4.identity().times(Mat4.translation(locs[i][0],locs[i][1],locs[i][2])).times(Mat4.rotation(ori,0,1,0));
+          let gold_model = Mat4.identity().times(Mat4.translation(locs[i][0],locs[i][1] + 1,locs[i][2]))
+                                          .times(Mat4.rotation(ori,0,1,0))
+                                          .times(Mat4.scale(0.45,0.45,0.45))
+                                          .times(Mat4.rotation(this.rotate_count * Math.PI / 45, 0, 1, 0));
+          if(g_b){
+            this.shapes.box.draw(context, program_state, gold_model,this.materials.lt_gold);
+          }
+          else {this.shapes.box.draw(context, program_state,model,this.materials.rocktexture); }
         }
-        else {this.shapes.rock.draw(context, program_state,model,this.materials.rocktexture); }
     }
 
   drawRoad(context, program_state,model){
@@ -291,7 +428,8 @@ export class Transforms_Sandbox_Base extends Scene
 
   display( context, program_state )
     {
-
+//       console.log(this.point_count);
+      console.log(this.obsticle_list);
      // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
       if( !context.scratchpad.controls )
         { this.children.push( context.scratchpad.controls = new defs.Movement_Controls() );
@@ -309,7 +447,7 @@ export class Transforms_Sandbox_Base extends Scene
 
 
       // /*****draw all obstacles*******/
-      this.create_obstacle(10); //create 10 obstacle
+      this.create_obstacle(5,10); //create 10 obstacle
       let _this  = this;
       this.rotate_count = (this.rotate_count + 1) % 45;
       this.obsticle_list.forEach(function(item){
@@ -321,6 +459,8 @@ export class Transforms_Sandbox_Base extends Scene
 
       // //collision test and remove collided item
       let collide_idx = this.collision_test(this.coord);
+//       console.log(collide_idx);
+//       console.log(this.obsticle_list)
       if(collide_idx !== -1) this.obsticle_list.splice(collide_idx,1);
 
       //document.querySelector( "#score" ).text("score:" + String(this.score));

@@ -18,7 +18,6 @@ export class Transforms_Sandbox_Base extends Scene
                        "bear": new Shape_From_File("./assets/bear.obj"),
                        "skateboard": new Shape_From_File("./assets/skateboard_color.obj"),
                        "score_point": new Subdivision_Sphere(4),
-                       "rock": new Shape_From_File("/assets/rock.obj")
 
                      }
 
@@ -54,10 +53,10 @@ export class Transforms_Sandbox_Base extends Scene
 
         this.coord = [15,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
         this.jump_t = 0;
+        this.start = false;
+        this.finish = false;
         this.obstacle_count = 0;
         this.point_count = 0;
-        this.total_obstacle = 0;
-        this.total_point =0;
         this.c_idx = 0; //last corner index
         // this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
         //               [[25,10,25],[25,10,-25],[-25,3,-25],[-25,3,25]],
@@ -89,6 +88,7 @@ export class Transforms_Sandbox_Base extends Scene
                                                             {this.right_f = 1; 
                                                              this.left_f = 0;}
                                                          });
+     this.key_triggered_button("start", [ "4" ], () => {this.start = true});
     }
 
   calc_height(nc_idx,c_idx,track_idx,x_loc){
@@ -116,7 +116,10 @@ export class Transforms_Sandbox_Base extends Scene
     return base_height;
   }
 
-
+  /**
+   * @param num_obstacles: number of obstacles to create
+   * @param gold_points: number of gold_points to create
+   */
   create_obstacle(num_obstacles, gold_points){
 
       if(this.obstacle_count<num_obstacles){
@@ -125,7 +128,6 @@ export class Transforms_Sandbox_Base extends Scene
         let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
         let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
         let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
-        let r_sign = Math.random()>0.5? -1: 1;
         let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
         track_change = track_change.times(rand);
         let type = 0;
@@ -136,7 +138,6 @@ export class Transforms_Sandbox_Base extends Scene
         } else {
           type = 0; // create obstacle in one track.
         }
-//         console.log(type);
         switch(type) {
           case(2):
                   locs[1] = [0,3,0];
@@ -184,9 +185,7 @@ export class Transforms_Sandbox_Base extends Scene
                  locs[0][1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0][0]);
                  break;
         }
-//         if(this.collision_test(locs) === -1) {
           let flag = true;
-
           for(var i = locs.length - 1; i >= 0; i--) {
             if(this.collision_test(locs[i]) != -1) {
               flag = false;
@@ -198,7 +197,6 @@ export class Transforms_Sandbox_Base extends Scene
             this.obsticle_list.push(ob_param);
             this.obstacle_count += 1;
           }
-//         }
     }
     if(this.point_count < gold_points) {
       let rand = Math.random()
@@ -207,7 +205,6 @@ export class Transforms_Sandbox_Base extends Scene
       let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
       let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
       let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
-      let r_sign = Math.random()>0.5? -1: 1;
       let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
       track_change = track_change.times(rand);
       if(track_change[2] ===0) {
@@ -260,9 +257,13 @@ export class Transforms_Sandbox_Base extends Scene
 
 
 
+
     //locations, orientation, ..., bounding box size, good_or_bad
 
-
+  /**
+   * @param bodytest: 1 for bear test, 0 for obstacle/gold_points test
+   * @param test_point: test position
+   */
   collision_test(test_point, bodytest=1){
       let index = -1;
       for(var i = 0; i< this.obsticle_list.length;i++){
@@ -277,9 +278,8 @@ export class Transforms_Sandbox_Base extends Scene
             }
             break
           }else if(inside && !this.obsticle_list[i].goodbad){
-            this.score -=1;
             if(bodytest) {
-              this.obstacle_count -= 1;
+              this.finish = true;
             }
             index = i;
             break;
@@ -318,28 +318,36 @@ export class Transforms_Sandbox_Base extends Scene
 
     switch(true){
       case dir[0] == -1:
-                    this.coord[0] -= 10*dt;
+                    if(this.start && !this.finish) {
+                      this.coord[0] -= 10*dt;
+                    }
                     theta = Math.PI/2;
                     if ( (this.corner[track_idx][nc_idx][0] - this.coord[0]) >=0 ) this.c_idx = nc_idx;
                     this.coord[2] = this.corner[track_idx][nc_idx][2];
                     break;
 
       case dir[0] == 1:
-                    this.coord[0] += 10*dt;
+                    if(this.start && !this.finish) {
+                      this.coord[0] += 10*dt;
+                    }                  
                     theta = -Math.PI/2;
                     if ( (this.coord[0] -this.corner[track_idx][nc_idx][0]) >=0 ) this.c_idx = nc_idx;
                     this.coord[2] = this.corner[track_idx][nc_idx][2];
                     break;
 
       case dir[2] == -1:
-                    this.coord[2] -= 10*dt;
+                    if(this.start && !this.finish) {
+                      this.coord[2] -= 10*dt;
+                    }
                     theta = 0;
                     if ((this.corner[track_idx][nc_idx][2] - this.coord[2]) >=0 ) this.c_idx = nc_idx;
                     this.coord[0] = this.corner[track_idx][nc_idx][0];
                     break;
 
       case dir[2] ==1:
-                    this.coord[2] += 10*dt;
+                    if(this.start && !this.finish) {
+                      this.coord[2] += 10*dt;
+                    }
                     theta = Math.PI;
                     if ((this.coord[2] -this.corner[track_idx][nc_idx][2]) >=0 ) this.c_idx = nc_idx;
                     this.coord[0] = this.corner[track_idx][nc_idx][0];
@@ -364,14 +372,12 @@ export class Transforms_Sandbox_Base extends Scene
       height = base_height;
     }
     this.coord[1] =height;
-    //console.log(base_height);
 
 
     return theta;
   }
 
   drawBruin(context, program_state,locs,ori){
-//         console.log(locs[1])
         let s_correct = 0;
         if(locs[1] == 10) {
           s_correct = -1.3;
@@ -428,8 +434,7 @@ export class Transforms_Sandbox_Base extends Scene
 
   display( context, program_state )
     {
-//       console.log(this.point_count);
-      console.log(this.obsticle_list);
+//       return;
      // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
       if( !context.scratchpad.controls )
         { this.children.push( context.scratchpad.controls = new defs.Movement_Controls() );
@@ -448,6 +453,7 @@ export class Transforms_Sandbox_Base extends Scene
 
       // /*****draw all obstacles*******/
       this.create_obstacle(5,10); //create 10 obstacle
+      console.log(this.obsticle_list);
       let _this  = this;
       this.rotate_count = (this.rotate_count + 1) % 45;
       this.obsticle_list.forEach(function(item){
@@ -459,12 +465,15 @@ export class Transforms_Sandbox_Base extends Scene
 
       // //collision test and remove collided item
       let collide_idx = this.collision_test(this.coord);
-//       console.log(collide_idx);
-//       console.log(this.obsticle_list)
       if(collide_idx !== -1) this.obsticle_list.splice(collide_idx,1);
 
       //document.querySelector( "#score" ).text("score:" + String(this.score));
-      $("#score").text("score:" + String(this.score));
+      if(!this.finish) {
+        $("#score").text("score:" + String(this.score));
+      } else {
+        $("#score").text("Game Over, Your Final Score is " + String(this.score));
+      }
+      
 
 
 

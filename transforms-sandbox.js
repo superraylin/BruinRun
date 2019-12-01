@@ -1,4 +1,5 @@
 import {tiny, defs} from './common.js';
+import {Shape_From_File} from './obj-file-demo.js';
 
                                                   // Pull these names into this module's scope for convenience:
 const { Vector,vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
@@ -15,8 +16,24 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes = { "torus":  new Torus(15,15),
                        "box": new Cube(),
                        "ball": new Subdivision_Sphere(4),
+                       "moore": new Shape_From_File( "assets/bina.obj" ),
+                       "math": new Shape_From_File( "assets/math.obj" ),
+                       "union": new Shape_From_File( "assets/union2.obj" ),
+                       "powell": new Shape_From_File( "assets/powell.obj" ),
+                       "e6": new Shape_From_File( "assets/e6.obj" ),
+                       "e5": new Shape_From_File( "assets/e5.obj" ),
+                       "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
+                       "royce": new Shape_From_File( "assets/royce.obj" ),
+                       "act": new Shape_From_File( "assets/act.obj" ),
+                       "letter_u": new U(),
+//                        "letter_c": new C(),
 
                      }
+
+      this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ), 
+          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) });
+      this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
+          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/stars.png" ) });
 
       const phong = new defs.Phong_Shader(1);
       const bump = new defs.Fake_Bump_Map(1);
@@ -36,8 +53,14 @@ export class Transforms_Sandbox_Base extends Scene
           lt_gray:new Material(phong,{ ambient:0.5, diffusivity:1, specularity:1, color: color(0.83,0.83,0.83,1) } ),
           road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
           grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
+          
+          stars: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ), 
+                  ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
+          powell: new Material( bump,  { color: color( .8,.8,.5,1 ), 
+                  ambient: .3, diffusivity: .3, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
+          letter: new Material(phong,{ ambient: 1, diffusivity: 1, specularity: 1, color: color( 0.325,0.408,0.584,1 ) } ),
 
-
+          
 
         }
 
@@ -52,12 +75,15 @@ export class Transforms_Sandbox_Base extends Scene
                       [[27,10,25],[27,10,-27],[-27,3,-27],[-51,3,-27],[-51,3,25],[-27,3,25]]];
         this.obsticle_list = [] //store all collision obsticle_list item.
         this.score = 0
+        this.bruin_speed = 10;
     }
   make_control_panel()
     {
       this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , "green",() => {this.left_f =  0;} );
       this.key_triggered_button( "jump", [ "2" ], () => this.up_f = 1     , "green",() => {} );
       this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , "green",() => {this.right_f = 0;});
+      this.key_triggered_button( "speed up", [ "9" ],() => {this.bruin_speed += 5;});
+      this.key_triggered_button( "speed down", [ "0" ],() => {this.bruin_speed -= 5;});
     }
 
   calc_height(nc_idx,c_idx,track_idx,x_loc){
@@ -145,31 +171,33 @@ export class Transforms_Sandbox_Base extends Scene
     let nc_idx = (this.c_idx+1)% this.corner[0].length; //next corner index
     let dir = this.corner[track_idx][nc_idx].map((n,i)=> Math.sign(n- this.corner[track_idx][this.c_idx][i]));
     let theta = 0; //orientation
+    
+    let speed = this.bruin_speed;
 
     switch(true){
       case dir[0] == -1:
-                    this.coord[0] -= 10*dt;
+                    this.coord[0] -= speed*dt;
                     theta = Math.PI/2;
                     if ( (this.corner[track_idx][nc_idx][0] - this.coord[0]) >=0 ) this.c_idx = nc_idx;
                     this.coord[2] = this.corner[track_idx][nc_idx][2];
                     break;
 
       case dir[0] == 1:
-                    this.coord[0] += 10*dt;
+                    this.coord[0] += speed*dt;
                     theta = -Math.PI/2;
                     if ( (this.coord[0] -this.corner[track_idx][nc_idx][0]) >=0 ) this.c_idx = nc_idx;
                     this.coord[2] = this.corner[track_idx][nc_idx][2];
                     break;
 
       case dir[2] == -1:
-                    this.coord[2] -= 10*dt;
+                    this.coord[2] -= speed*dt;
                     theta = 0;
                     if ((this.corner[track_idx][nc_idx][2] - this.coord[2]) >=0 ) this.c_idx = nc_idx;
                     this.coord[0] = this.corner[track_idx][nc_idx][0];
                     break;
 
       case dir[2] ==1:
-                    this.coord[2] += 10*dt;
+                    this.coord[2] += speed*dt;
                     theta = Math.PI;
                     if ((this.coord[2] -this.corner[track_idx][nc_idx][2]) >=0 ) this.c_idx = nc_idx;
                     this.coord[0] = this.corner[track_idx][nc_idx][0];
@@ -261,14 +289,51 @@ export class Transforms_Sandbox_Base extends Scene
       //document.querySelector( "#score" ).text("score:" + String(this.score));
       $("#score").text("score:" + String(this.score));
 
-
-
-
       /*****Ground*****/
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.test);
 
+      /******Buildings******/    
+      //Letter
+      this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
+//       this.shapes.letter_c.draw( context, program_state, Mat4.translation(32,10,-22), this.materials.letter );
+
+
+      //MOORE                     
+      this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.stars  );
+      
+      //Math Building
+      let mat_math_building = Mat4.translation(12,10,32);
+      mat_math_building = mat_math_building.times(Mat4.rotation(1.5 * Math.PI,0,-1,0));
+      mat_math_building = mat_math_building.times(Mat4.scale(3,6,15));
+      this.shapes.math.draw( context, program_state, mat_math_building, this.materials.stars  );
+
+      //Union
+      let mat_union = Mat4.translation(-18,8,12);
+//       mat_union = mat_union.times(Mat4.rotation(0.5*Math.PI,-1,0,0));
+      mat_union = mat_union.times(Mat4.scale(6,6,6));
+      this.shapes.union.draw( context, program_state, mat_union, this.materials.stars  );
+
+      //Powell
+      let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
+      this.shapes.powell.draw( context, program_state, mat_library, this.materials.powell  );
+
+      //Royce
+      let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
+      this.shapes.royce.draw( context, program_state, mat_royce, this.materials.powell  );
+
+      //Engineering VI & V
+      this.shapes.e6.draw( context, program_state, Mat4.translation(-18,6,34).times(Mat4.scale(6,6,6)), this.materials.stars  );
+      this.shapes.e5.draw( context, program_state, Mat4.translation(-6,6,34).times(Mat4.scale(6,6,6)), this.materials.stars  );
+
+      //Kaufman
+      this.shapes.kaufman.draw( context, program_state, Mat4.translation(-18,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
+
+      //Student activity center
+      this.shapes.act.draw( context, program_state, Mat4.translation(-18,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+
+      
       /*****Grass**/
       this.shapes.box.draw(context, program_state, Mat4.translation(-37,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
 
@@ -292,12 +357,83 @@ export class Transforms_Sandbox_Base extends Scene
         road_model = this.drawRoad(context, program_state,road_model)
       }
 
-
       /******camera matrix******/
-      let camera_model = bruin_mat.times(Mat4.translation(0,5,5)).times(Mat4.rotation(-Math.PI/8,1,0,0));
+      let camera_model = bruin_mat.times(Mat4.translation(0,8,8)).times(Mat4.rotation(-Math.PI/8,1,0,0));
       camera_model = Mat4.inverse(camera_model);
       camera_model = camera_model.map( (x,i) => Vector.from( program_state.camera_inverse[i] ).mix( x, 0.05 ) )
       program_state.set_camera(camera_model);
 
     }
 }
+
+const U = defs.U =
+class U extends Shape {
+  constructor() {
+    super( "position", "normal", "texture_coord" );
+
+    let Mat_trans = Mat4.identity();
+
+    //U
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    for(var i = 0; i < 3; i++) {
+      Mat_trans = Mat_trans.times(Mat4.translation(0,2,0));
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,0,4)));
+    }
+    Mat_trans = Mat_trans.times(Mat4.translation(0,-6,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,0,2)));
+
+
+    //C
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,6));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    for(var i = 0; i < 3; i++) {
+      Mat_trans = Mat_trans.times(Mat4.translation(0,2,0));
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    }
+    Mat_trans = Mat_trans.times(Mat4.translation(0,-6,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,6,0)));
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,6,0)));
+
+
+    //L
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,4));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    for(var i = 0; i < 3; i++) {
+      Mat_trans = Mat_trans.times(Mat4.translation(0,2,0));
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    }
+    Mat_trans = Mat_trans.times(Mat4.translation(0,-6,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,0,2)));
+
+    //A
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,6));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    for(var i = 0; i < 3; i++) {
+      Mat_trans = Mat_trans.times(Mat4.translation(0,2,0));
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+      Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,0,4)));
+    }
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,-4,0)));
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0,2));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans.times(Mat4.translation(0,-4,0)));
+    Mat_trans = Mat_trans.times(Mat4.translation(0,0-6,0));
+    Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+  }
+}
+
+// const C = defs.C =
+// class C extends Shape {
+//   constructor() {
+
+
+//   }
+// }

@@ -25,16 +25,18 @@ export class Transforms_Sandbox_Base extends Scene
                        "e6": new Shape_From_File( "assets/e6.obj" ),
                        "e5": new Shape_From_File( "assets/e5.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-                       "royce": new Shape_From_File( "assets/royce.obj" ),
-                       "act": new Shape_From_File( "assets/act.obj" ),
+                       //"royce": new Shape_From_File( "assets/royce.obj" ),
+                       //"act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
+                       "skull": new Shape_From_File("assets/skull.obj"),
+                       "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
 
                      }
 
-      this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ), 
-          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) });
-      this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ), 
-          ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/stars.png" ) });
+      // this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ),
+      //     ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) });
+      // this.bumps = new Material( new defs.Fake_Bump_Map( 1 ), { color: color( .5,.5,.5,1 ),
+      //     ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/stars.png" ) });
 
       const phong = new defs.Phong_Shader(1);
       const bump = new defs.Fake_Bump_Map(1);
@@ -62,12 +64,14 @@ export class Transforms_Sandbox_Base extends Scene
           rocktexture: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/rocktexture.jpg" )}),
 //           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
 // color(0.246,0.164,0.08,1
-          
-          stars: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ), 
+
+          stars: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ),
                   ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
-          powell: new Material( bump,  { color: color( .8,.8,.5,1 ), 
+          powell: new Material( bump,  { color: color( .8,.8,.5,1 ),
                   ambient: .3, diffusivity: .3, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
-          letter: new Material(phong,{ ambient: 1, diffusivity: 1, specularity: 1, color: color( 0.325,0.408,0.584,1 ) } )
+          letter: new Material(phong,{ ambient: 1, diffusivity: 1, specularity: 1, color: color( 0.325,0.408,0.584,1 ) } ),
+          sk_white: new Material(phong,{ ambient: 0.5, diffusivity: 1, specularity: 1, color: color( 0.8,0.8,0.8,1 ) } ),
+          orange: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 1,0.5,0,1 ) } ),
 
         }
 
@@ -92,21 +96,21 @@ export class Transforms_Sandbox_Base extends Scene
     {
 //       this.key_triggered_button( "left", [ "1" ], () => {this.left_f = 1 ;this.right_f =0}   , "green",() => {this.left_f =  0;} );
       this.key_triggered_button( "left", [ "1" ], () => {
-                                                          if(this.right_f > 0) 
+                                                          if(this.right_f > 0)
                                                             {this.left_f = 0 ;
-                                                             this.right_f = 0;} 
-                                                          else 
-                                                            {this.left_f=1; 
+                                                             this.right_f = 0;}
+                                                          else
+                                                            {this.left_f=1;
                                                              this.right_f=0}
                                                         });
       this.key_triggered_button( "jump", [ "2" ], () => this.up_f = 1     , "green",() => {} );
 //       this.key_triggered_button( "right", [ "3" ],() => {this.right_f = 1; this.left_f = 0} , "green",() => {this.right_f = 0;});
       this.key_triggered_button( "right", [ "3" ],() => {
-                                                          if(this.left_f > 0) 
-                                                            {this.right_f = 0; 
-                                                             this.left_f = 0} 
-                                                          else 
-                                                            {this.right_f = 1; 
+                                                          if(this.left_f > 0)
+                                                            {this.right_f = 0;
+                                                             this.left_f = 0}
+                                                          else
+                                                            {this.right_f = 1;
                                                              this.left_f = 0;}
                                                          });
      this.key_triggered_button("start", [ "4" ], () => {this.start = true});
@@ -245,7 +249,7 @@ export class Transforms_Sandbox_Base extends Scene
         }
     }
   }
-  
+
 //         let rand = Math.random()
 //         let r_sign = Math.random()>0.5? -1: 1;
 //         let locs = [0,3,0];
@@ -338,7 +342,7 @@ export class Transforms_Sandbox_Base extends Scene
     let nc_idx = (this.c_idx+1)% this.corner[0].length; //next corner index
     let dir = this.corner[track_idx][nc_idx].map((n,i)=> Math.sign(n- this.corner[track_idx][this.c_idx][i]));
     let theta = 0; //orientation
-    
+
     let speed = this.bruin_speed;
 
     switch(true){
@@ -354,7 +358,7 @@ export class Transforms_Sandbox_Base extends Scene
       case dir[0] == 1:
                     if(this.start && !this.finish) {
                       this.coord[0] += speed*dt;
-                    }                  
+                    }
                     theta = -Math.PI/2;
                     if ( (this.coord[0] -this.corner[track_idx][nc_idx][0]) >=0 ) this.c_idx = nc_idx;
                     this.coord[2] = this.corner[track_idx][nc_idx][2];
@@ -443,9 +447,9 @@ export class Transforms_Sandbox_Base extends Scene
                                           .times(Mat4.scale(0.45,0.45,0.45))
                                           .times(Mat4.rotation(this.rotate_count * Math.PI / 45, 0, 1, 0));
           if(g_b){
-            this.shapes.box.draw(context, program_state, gold_model,this.materials.lt_gold);
+            this.shapes.pumpkin.draw(context, program_state, gold_model,this.materials.orange);
           }
-          else {this.shapes.box.draw(context, program_state,model,this.materials.rocktexture); }
+          else {this.shapes.skull.draw(context, program_state,model,this.materials.sk_white); }
         }
     }
 
@@ -470,7 +474,7 @@ export class Transforms_Sandbox_Base extends Scene
       const t = this.t = program_state.animation_time/1000,dt = program_state.animation_delta_time / 1000;
       program_state.lights = [new Light( Vector.of( 0,50,0,1 ), color( 1,1,1,1),1000) ];
 
-      
+
 
       //update location and return orientation of bruin
       let bruin_theta = this.bruin_control(dt);
@@ -480,7 +484,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.create_obstacle(5,10); //create 10 obstacle
       console.log(this.obsticle_list);
       let _this  = this;
-      this.rotate_count = (this.rotate_count + 1) % 45;
+      this.rotate_count = (this.t*10) % 180;
       this.obsticle_list.forEach(function(item){
         _this.drawObstacle(context, program_state,item.location,0,item.bounding,item.goodbad);
       });
@@ -498,22 +502,22 @@ export class Transforms_Sandbox_Base extends Scene
       } else {
         $("#score").text("Game Over, Your Final Score is " + String(this.score));
       }
-      
+
 
       /*****Ground*****/
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.test);
       this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.test);
 
-      /******Buildings******/    
+      /******Buildings******/
       //Letter
       this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
 //       this.shapes.letter_c.draw( context, program_state, Mat4.translation(32,10,-22), this.materials.letter );
 
 
-      //MOORE                     
+      //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.stars  );
-      
+
       //Math Building
       let mat_math_building = Mat4.translation(12,10,32);
       mat_math_building = mat_math_building.times(Mat4.rotation(1.5 * Math.PI,0,-1,0));
@@ -532,7 +536,7 @@ export class Transforms_Sandbox_Base extends Scene
 
       //Royce
       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-      this.shapes.royce.draw( context, program_state, mat_royce, this.materials.powell  );
+      //this.shapes.royce.draw( context, program_state, mat_royce, this.materials.powell  );
 
       //Engineering VI & V
       this.shapes.e6.draw( context, program_state, Mat4.translation(-18,6,34).times(Mat4.scale(6,6,6)), this.materials.stars  );
@@ -542,9 +546,9 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.kaufman.draw( context, program_state, Mat4.translation(-18,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //Student activity center
-      this.shapes.act.draw( context, program_state, Mat4.translation(-18,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+      //this.shapes.act.draw( context, program_state, Mat4.translation(-18,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
-      
+
       /*****Grass**/
       this.shapes.box.draw(context, program_state, Mat4.translation(-37,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
 

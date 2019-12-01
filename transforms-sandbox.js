@@ -2,7 +2,7 @@ import {tiny, defs} from './common.js';
 import {Shape_From_File} from './obj-file-demo.js';
                                                   // Pull these names into this module's scope for convenience:
 const { Vector,vec3, vec4, color, Mat4, Light, Shape, Material, Shader, Texture, Scene } = tiny;
-const { Torus,Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere } = defs;
+const { Torus,Triangle, Square, Tetrahedron, Windmill, Cube, Subdivision_Sphere, Capped_Cylinder } = defs;
 
 export class Transforms_Sandbox_Base extends Scene
 {
@@ -18,7 +18,6 @@ export class Transforms_Sandbox_Base extends Scene
                        "bear": new Shape_From_File("./assets/bear.obj"),
                        "skateboard": new Shape_From_File("./assets/skateboard_color.obj"),
                        "score_point": new Subdivision_Sphere(4),
-<<<<<<< Updated upstream
                        "moore": new Shape_From_File( "assets/bina.obj" ),
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
@@ -26,13 +25,12 @@ export class Transforms_Sandbox_Base extends Scene
                        "e6": new Shape_From_File( "assets/e64.obj" ),
                        "e5": new Shape_From_File( "assets/e63.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-                       "royce": new Shape_From_File( "assets/royce.obj" ),
-                       "act": new Shape_From_File( "assets/act.obj" ),
+//                        "royce": new Shape_From_File( "assets/royce.obj" ),
+//                        "act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "grass":new Shape_From_File("assets/grass.obj"),
-=======
                        // "moore": new Shape_From_File( "assets/bina.obj" ),
                        // "math": new Shape_From_File( "assets/math.obj" ),
                        // "union": new Shape_From_File( "assets/union2.obj" ),
@@ -46,7 +44,10 @@ export class Transforms_Sandbox_Base extends Scene
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "stair":new Shape_From_File("assets/stait.obj"),
->>>>>>> Stashed changes
+
+                       "board_union": new board(),
+                       "sign": new sign(),
+                        
 
                      }
 
@@ -97,6 +98,9 @@ export class Transforms_Sandbox_Base extends Scene
           sk_white: new Material(phong,{ ambient: 0.5, diffusivity: 1, specularity: 1, color: color( 0.8,0.8,0.8,1 ) } ),
           orange: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 1,0.5,0,1 ) } ),
           grass_obj: new Material(bump,{ ambient: 0.2, diffusivity: 0.8, specularity: 0.5, color: color( 0,1,0,1 ) } ),
+
+          board_union: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
+          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
 
         }
 
@@ -516,6 +520,10 @@ export class Transforms_Sandbox_Base extends Scene
       //Letter
       this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
 
+      //board
+      this.shapes.board_union.draw( context, program_state, Mat4.translation(32,10,12), this.materials.board_union );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(32.205,10,12).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)), this.materials.sign);
+
 
       //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );
@@ -538,7 +546,7 @@ export class Transforms_Sandbox_Base extends Scene
 
       //Royce
       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-      this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
+//       this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
 
       //Engineering VI & V
       this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
@@ -548,7 +556,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //Student activity center
-      this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+//       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //this.shapes.stair.draw(context,program_state, Mat4.translation(0,5,0),this.materials.brick);
       /*****Grass**/
@@ -655,3 +663,23 @@ class U extends Shape {
 
 //   }
 // }
+
+const board = defs.board =
+class board extends Shape {
+    constructor() {
+        super( "position", "normal", "texture_coord" );
+        let Mat_trans = Mat4.identity().times(Mat4.translation(0,2,0)).times(Mat4.rotation(1.5 * Math.PI,0,1,0)).times(Mat4.scale(3.56,1.65,1));
+        Square.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    }
+}
+
+const sign = defs.sign = 
+class sign extends Shape {
+    constructor() {
+        super( "position", "normal", "texture_coord" );
+        let rod_trans = Mat4.identity().times(Mat4.rotation(Math.PI / 2 , 1, 0, 0)).times(Mat4.scale(0.2,0.2,2));
+        Capped_Cylinder.insert_transformed_copy_into(this, [15,15],rod_trans);
+        let Mat_trans = Mat4.identity().times(Mat4.translation(0,2,0)).times(Mat4.scale(3.56,1.65,0.2));
+        Cube.insert_transformed_copy_into(this, ["position", "normal", "texture_coord"], Mat_trans);
+    }
+}

@@ -116,6 +116,15 @@ export class Transforms_Sandbox_Base extends Scene
      this.key_triggered_button("start", [ "4" ], () => {this.start = true});
       this.key_triggered_button( "speed up", [ "9" ],() => {this.bruin_speed += 5;});
       this.key_triggered_button( "speed down", [ "0" ],() => {this.bruin_speed -= 5;});
+      this.key_triggered_button("reload", ["r"], () => {this.finish = false;
+                                                        this.start = false;
+      													this.coord = [15, 3, 0, 0];
+      													this.obsticle_list = []
+      													this.obstacle_count = 0;
+      													this.point_count = 0;
+      													this.score = 0;
+      													this.c_idx = 0;
+      													this.bruin_speed = 10;})
     }
 
   calc_height(nc_idx,c_idx,track_idx,x_loc){
@@ -449,7 +458,17 @@ export class Transforms_Sandbox_Base extends Scene
           if(g_b){
             this.shapes.pumpkin.draw(context, program_state, gold_model,this.materials.orange);
           }
-          else {this.shapes.skull.draw(context, program_state,model,this.materials.sk_white); }
+          else {
+              let adj_ori = Mat4.identity();
+              if(locs[i][2] == -23 || locs[i][2] == -25 || locs[i][2] == -27) {
+                  adj_ori = adj_ori.times(Mat4.rotation(Math.PI / 2, 0, 1, 0));
+              } else if (locs[i][2] == 21 || locs[i][2] == 23 || locs[i][2] == 25) {
+                  adj_ori = adj_ori.times(Mat4.rotation(-Math.PI / 2, 0, 1, 0));
+              } else if (locs[i][0] == -47 || locs[i][0] == -49 || locs[i][0] == -51) {
+                  adj_ori = adj_ori.times(Mat4.rotation(Math.PI, 0, 1, 0));
+              }
+              this.shapes.skull.draw(context, program_state,model.times(adj_ori),this.materials.sk_white);
+          }
         }
     }
 
@@ -463,6 +482,7 @@ export class Transforms_Sandbox_Base extends Scene
 
   display( context, program_state )
     {
+//         console.log(this.obsticle_list)
 //       return;
      // Setup -- This part sets up the scene's overall camera matrix, projection matrix, and lights:
       if( !context.scratchpad.controls )
@@ -482,7 +502,7 @@ export class Transforms_Sandbox_Base extends Scene
 
       // /*****draw all obstacles*******/
       this.create_obstacle(5,10); //create 10 obstacle
-      console.log(this.obsticle_list);
+//       console.log(this.obsticle_list);
       let _this  = this;
       this.rotate_count = (this.t*10) % 180;
       this.obsticle_list.forEach(function(item){
@@ -490,6 +510,7 @@ export class Transforms_Sandbox_Base extends Scene
       });
 
       //draw main character
+//       console.log(this.coord)
       let bruin_mat = this.drawBruin(context, program_state,this.coord,bruin_theta);
 
       // //collision test and remove collided item

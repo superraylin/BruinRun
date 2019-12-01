@@ -22,14 +22,15 @@ export class Transforms_Sandbox_Base extends Scene
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
                        "powell": new Shape_From_File( "assets/powell.obj" ),
-                       "e6": new Shape_From_File( "assets/e6.obj" ),
-                       "e5": new Shape_From_File( "assets/e5.obj" ),
+                       "e6": new Shape_From_File( "assets/e64.obj" ),
+                       "e5": new Shape_From_File( "assets/e63.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-                       //"royce": new Shape_From_File( "assets/royce.obj" ),
-                       //"act": new Shape_From_File( "assets/act.obj" ),
+//                        "royce": new Shape_From_File( "assets/royce.obj" ),
+//                        "act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
+                       "grass":new Shape_From_File("assets/grass.obj"),
 
                      }
 
@@ -64,14 +65,18 @@ export class Transforms_Sandbox_Base extends Scene
           rocktexture: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/rocktexture.jpg" )}),
 //           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
 // color(0.246,0.164,0.08,1
-
+          
+          moore: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ),
+                  ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/road4.png" ) }),
+          engr: new Material( phong,  { color: color( .8,.8,.5,1 ), ambient: .5, diffusivity: .5, specularity: .5}),
           stars: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ),
-                  ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
+                  ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/road4.png" ) }),
           powell: new Material( bump,  { color: color( .8,.8,.5,1 ),
-                  ambient: .3, diffusivity: .3, specularity: .5, texture: new Texture( "assets/ChurchBrick.png" ) }),
+                  ambient: .3, diffusivity: .3, specularity: .5, texture: new Texture( "assets/road4.png" ) }),
           letter: new Material(phong,{ ambient: 1, diffusivity: 1, specularity: 1, color: color( 0.325,0.408,0.584,1 ) } ),
           sk_white: new Material(phong,{ ambient: 0.5, diffusivity: 1, specularity: 1, color: color( 0.8,0.8,0.8,1 ) } ),
           orange: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 1,0.5,0,1 ) } ),
+          grass_obj: new Material(bump,{ ambient: 0.2, diffusivity: 0.8, specularity: 0.5, color: color( 0,1,0,1 ) } ),
 
         }
 
@@ -306,7 +311,8 @@ export class Transforms_Sandbox_Base extends Scene
             break
           }else if(inside && !this.obsticle_list[i].goodbad){
             if(bodytest) {
-              this.finish = true;
+                this.point_count -= 1;
+//               this.finish = true;
             }
             index = i;
             break;
@@ -512,45 +518,45 @@ export class Transforms_Sandbox_Base extends Scene
       /******Buildings******/
       //Letter
       this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
-//       this.shapes.letter_c.draw( context, program_state, Mat4.translation(32,10,-22), this.materials.letter );
 
 
       //MOORE
-      this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.stars  );
+      this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );
 
       //Math Building
-      let mat_math_building = Mat4.translation(12,10,32);
+      let mat_math_building = Mat4.translation(14,10,34);
       mat_math_building = mat_math_building.times(Mat4.rotation(1.5 * Math.PI,0,-1,0));
       mat_math_building = mat_math_building.times(Mat4.scale(3,6,15));
       this.shapes.math.draw( context, program_state, mat_math_building, this.materials.stars  );
 
       //Union
-      let mat_union = Mat4.translation(-18,8,12);
+      let mat_union = Mat4.translation(-30,8,12);
 //       mat_union = mat_union.times(Mat4.rotation(0.5*Math.PI,-1,0,0));
       mat_union = mat_union.times(Mat4.scale(6,6,6));
       this.shapes.union.draw( context, program_state, mat_union, this.materials.stars  );
 
       //Powell
       let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
-      this.shapes.powell.draw( context, program_state, mat_library, this.materials.powell  );
+      this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
 
       //Royce
       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-      //this.shapes.royce.draw( context, program_state, mat_royce, this.materials.powell  );
+//       this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
 
       //Engineering VI & V
-      this.shapes.e6.draw( context, program_state, Mat4.translation(-18,6,34).times(Mat4.scale(6,6,6)), this.materials.stars  );
-      this.shapes.e5.draw( context, program_state, Mat4.translation(-6,6,34).times(Mat4.scale(6,6,6)), this.materials.stars  );
+      this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
+      this.shapes.e5.draw( context, program_state, Mat4.translation(-10,8,34).times(Mat4.rotation(-0.25*Math.PI,0,1,0)).times(Mat4.scale(6,6,6)), this.materials.moore  );
 
       //Kaufman
-      this.shapes.kaufman.draw( context, program_state, Mat4.translation(-18,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
+      this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //Student activity center
-      //this.shapes.act.draw( context, program_state, Mat4.translation(-18,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+//       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
 
       /*****Grass**/
-      this.shapes.box.draw(context, program_state, Mat4.translation(-37,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
+//       this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
+      this.shapes.grass.draw(context, program_state, Mat4.translation(-18,2,-13).times(Mat4.rotation(-0.5*Math.PI,1,0,0)).times(Mat4.scale(4,4,6)) , this.materials.grass_obj)
 
       /****Stair*****/
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);

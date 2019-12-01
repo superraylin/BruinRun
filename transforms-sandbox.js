@@ -26,8 +26,8 @@ export class Transforms_Sandbox_Base extends Scene
                        "e6": new Shape_From_File( "assets/e64.obj" ),
                        "e5": new Shape_From_File( "assets/e63.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-//                        "royce": new Shape_From_File( "assets/royce.obj" ),
-//                        "act": new Shape_From_File( "assets/act.obj" ),
+                       "royce": new Shape_From_File( "assets/royce.obj" ),
+                       "act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
@@ -538,7 +538,7 @@ export class Transforms_Sandbox_Base extends Scene
 
       //Royce
       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-//       this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
+      this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
 
       //Engineering VI & V
       this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
@@ -548,7 +548,7 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //Student activity center
-//       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+      this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
       //this.shapes.stair.draw(context,program_state, Mat4.translation(0,5,0),this.materials.brick);
       /*****Grass**/

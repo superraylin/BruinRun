@@ -53,7 +53,7 @@ class Canvas_Widget
       if( !this.show_canvas )
         canvas.style.display = "none";
 
-      this.webgl_manager = new tiny.Webgl_Manager( canvas, color( 0,0,0,1 ) );  // Second parameter sets background color.
+      this.webgl_manager = new tiny.Webgl_Manager( canvas, color( 0.59,0.8,1,0.5 ) );  // Second parameter sets background color.
 
 
                            // Add scenes and child widgets

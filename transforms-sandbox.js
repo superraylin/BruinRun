@@ -18,6 +18,7 @@ export class Transforms_Sandbox_Base extends Scene
                        "bear": new Shape_From_File("./assets/bear.obj"),
                        "skateboard": new Shape_From_File("./assets/skateboard_color.obj"),
                        "score_point": new Subdivision_Sphere(4),
+<<<<<<< Updated upstream
                        "moore": new Shape_From_File( "assets/bina.obj" ),
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
@@ -31,6 +32,21 @@ export class Transforms_Sandbox_Base extends Scene
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "grass":new Shape_From_File("assets/grass.obj"),
+=======
+                       // "moore": new Shape_From_File( "assets/bina.obj" ),
+                       // "math": new Shape_From_File( "assets/math.obj" ),
+                       // "union": new Shape_From_File( "assets/union2.obj" ),
+                       // "powell": new Shape_From_File( "assets/powell.obj" ),
+                       // "e6": new Shape_From_File( "assets/e6.obj" ),
+                       // "e5": new Shape_From_File( "assets/e5.obj" ),
+                       // "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
+                       //"royce": new Shape_From_File( "assets/royce.obj" ),
+                       //"act": new Shape_From_File( "assets/act.obj" ),
+                       //"letter_u": new U(),
+                       "skull": new Shape_From_File("assets/skull.obj"),
+                       "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
+                       "stair":new Shape_From_File("assets/stait.obj"),
+>>>>>>> Stashed changes
 
                      }
 
@@ -41,6 +57,8 @@ export class Transforms_Sandbox_Base extends Scene
 
       const phong = new defs.Phong_Shader(1);
       const bump = new defs.Fake_Bump_Map(1);
+      const tphong = new defs.Textured_Phong(1);
+
       let rotate_count = 0;
       this.rotate_count = rotate_count;
       this.materials =
@@ -57,15 +75,17 @@ export class Transforms_Sandbox_Base extends Scene
 
           lt_gray:new Material(phong,{ ambient:0.5, diffusivity:0.5, specularity:0.5, color: color(0.83,0.83,0.83,1) } ),
           lt_gold: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color(1, 0.83, 0,1)}),
+          brick: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/brick.jpg" )}),
           road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
           grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
           skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/skateboard.jpg")}),
-          bear: new Material( bump, { ambient: 1, texture: new Texture("assets/bear-color.png")}),
+          bear: new Material( tphong, { ambient: 0.8, texture: new Texture("assets/fur.png")}),
+          bear1: new Material( bump, { ambient: 0.6, diffusivity:0.2, specularity:0.5,color: color( 0.4,0.2,0,1 )}),
 //           rocktexture: new Material(bump, { ambient: 1, texture: new Texture( "assets/rocktexture.jpg" )})
-          rocktexture: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/rocktexture.jpg" )}),
+          rocktexture: new Material(bump,{ambient: 0.6, color: color( 1,0.5,0,1 )}),
 //           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
 // color(0.246,0.164,0.08,1
-          
+
           moore: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ),
                   ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/road4.png" ) }),
           engr: new Material( phong,  { color: color( .8,.8,.5,1 ), ambient: .5, diffusivity: .5, specularity: .5}),
@@ -80,7 +100,7 @@ export class Transforms_Sandbox_Base extends Scene
 
         }
 
-        this.coord = [15,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
+        this.coord = [25,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
         this.jump_t = 0;
         this.start = false;
         this.finish = false;
@@ -264,37 +284,6 @@ export class Transforms_Sandbox_Base extends Scene
     }
   }
 
-//         let rand = Math.random()
-//         let r_sign = Math.random()>0.5? -1: 1;
-//         let locs = [0,3,0];
-
-//         let rand_track = Math.floor((Math.random()*this.corner.length)%this.corner.length);
-//         let rand_corner = Math.floor((Math.random()*this.corner[0].length) %this.corner[0].length);
-//         let rand_nxcorner = (rand_corner+1)% this.corner[0].length;
-
-//         let track_change = Vector.from(this.corner[rand_track][rand_nxcorner]).minus(Vector.from(this.corner[rand_track][rand_corner]));
-//         track_change = track_change.times(rand); //here is the problem
-
-
-//         if(track_change[2] ===0) {
-//           locs[2] = this.corner[rand_track][rand_nxcorner][2];
-//           locs[0] = track_change[0]+this.corner[rand_track][rand_corner][0]
-//         }
-//         else {
-//           locs[0] = this.corner[rand_track][rand_nxcorner][0];
-//           locs[2] = track_change[2]+this.corner[rand_track][rand_corner][2]
-//         }
-
-//         locs[1] = this.calc_height(rand_nxcorner,rand_corner,rand_track,locs[0]);
-
-//         if(this.collision_test(locs) === -1){
-//           let ob_param = { location: locs,
-//                             bounding: 2,
-//                             goodbad: rand>0.5};
-
-//           this.obsticle_list.push(ob_param);
-//         }
-
 
 
 
@@ -328,19 +317,7 @@ export class Transforms_Sandbox_Base extends Scene
         }
       }
       return index;
-//       let index = -1;
-//       for(var i = 0; i< this.obsticle_list.length;i++){
-//         let rad = this.obsticle_list[i].bounding;
-//         let inside = this.obsticle_list[i].location.every((n,j)=>Math.abs(n-test_point[j])<rad); //if inside bounding for all
-//         if(inside && this.obsticle_list[i].goodbad){
-//           this.score +=1;
-//           index = i;
-//         }else if(inside && !this.obsticle_list[i].goodbad){
-//           this.score -=1;
-//           index = i;
-//         }
-//       }
-//       return index;
+
     }
   bruin_control(dt){
     /**********User Input control********/
@@ -531,9 +508,9 @@ export class Transforms_Sandbox_Base extends Scene
 
 
       /*****Ground*****/
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.test);
-      this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.test);
-      this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.test);
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.grass);
+      this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.grass);
+      this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.grass);
 
       /******Buildings******/
       //Letter
@@ -573,14 +550,14 @@ export class Transforms_Sandbox_Base extends Scene
       //Student activity center
 //       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
-
+      //this.shapes.stair.draw(context,program_state, Mat4.translation(0,5,0),this.materials.brick);
       /*****Grass**/
 //       this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
       this.shapes.grass.draw(context, program_state, Mat4.translation(-18,2,-13).times(Mat4.rotation(-0.5*Math.PI,1,0,0)).times(Mat4.scale(4,4,6)) , this.materials.grass_obj)
 
       /****Stair*****/
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,-25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.muddy);
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.brick);
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,-25).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.brick);
 
       /******Road*****/
 

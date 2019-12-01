@@ -18,7 +18,6 @@ export class Transforms_Sandbox_Base extends Scene
                        "bear": new Shape_From_File("./assets/bear.obj"),
                        "skateboard": new Shape_From_File("./assets/skateboard_color.obj"),
                        "score_point": new Subdivision_Sphere(4),
-<<<<<<< Updated upstream
                        "moore": new Shape_From_File( "assets/bina.obj" ),
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
@@ -32,7 +31,6 @@ export class Transforms_Sandbox_Base extends Scene
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "grass":new Shape_From_File("assets/grass.obj"),
-=======
                        // "moore": new Shape_From_File( "assets/bina.obj" ),
                        // "math": new Shape_From_File( "assets/math.obj" ),
                        // "union": new Shape_From_File( "assets/union2.obj" ),
@@ -46,7 +44,6 @@ export class Transforms_Sandbox_Base extends Scene
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "stair":new Shape_From_File("assets/stait.obj"),
->>>>>>> Stashed changes
 
                      }
 

@@ -320,8 +320,7 @@ export class Transforms_Sandbox_Base extends Scene
             break
           }else if(inside && !this.obsticle_list[i].goodbad){
             if(bodytest) {
-                this.point_count -= 1;
-//               this.finish = true;
+              this.finish = true;
             }
             index = i;
             break;

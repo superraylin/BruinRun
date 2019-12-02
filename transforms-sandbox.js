@@ -34,6 +34,7 @@ export class Transforms_Sandbox_Base extends Scene
                        "stair":new Shape_From_File("assets/stait.obj"),
                        "board": new board(),
                        "sign": new sign(),
+                       "statue":new Shape_From_File("assets/statue.obj"),
 
                      }
 
@@ -68,10 +69,9 @@ export class Transforms_Sandbox_Base extends Scene
           skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/skateboard.jpg")}),
           bear: new Material( tphong, { ambient: 0.8, texture: new Texture("assets/fur.png")}),
           bear1: new Material( bump, { ambient: 0.6, diffusivity:0.2, specularity:0.5,color: color( 0.4,0.2,0,1 )}),
-//           rocktexture: new Material(bump, { ambient: 1, texture: new Texture( "assets/rocktexture.jpg" )})
+          rocktexture1: new Material(bump, { ambient: 1, texture: new Texture( "assets/rocktexture.jpg" )}),
           rocktexture: new Material(bump,{ambient: 0.6, color: color( 1,0.5,0,1 )}),
-//           bear: new Material( bump, {ambient:0.5, diffusivity:0.1, specularity:0.3, color: color(0.356,0.26,0.17,1)})
-// color(0.246,0.164,0.08,1
+
 
           moore: new Material( new defs.Textured_Phong( 1 ),  { color: color( .8,.8,.5,1 ),
                   ambient: .3, diffusivity: .5, specularity: .5, texture: new Texture( "assets/road4.png" ) }),
@@ -96,14 +96,15 @@ export class Transforms_Sandbox_Base extends Scene
           board_moore: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/moore.jpg" )}),
           board_kaufman: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/kaufman.jpg" )}),
           board_royce: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/royce.jpg" )}),
-          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
+          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } ),
+          bronze: new Material(phong,{ ambient: 0.3, diffusivity: 0.5, specularity: 0.9, color: color( 0.9,0.7,0.5,1 ) } ),
         }
 
         this.coord = [25,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
         this.jump_t = 0;
         this.start = false;
         this.finish = false;
-        this.obstacle_count = 0;
+        this.obstacle_count = 0;  
         this.point_count = 0;
         this.c_idx = 0; //last corner index
         // this.corner= [[[23,10,23],[23,10,-23],[-23,3,-23],[-23,3,23]],
@@ -553,7 +554,7 @@ export class Transforms_Sandbox_Base extends Scene
       //Math Building board
       this.shapes.board.draw( context, program_state, Mat4.translation(11.8,8,28).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_math );
       this.shapes.sign.draw( context, program_state, Mat4.translation(11.8,8,28.205), this.materials.sign);
-        
+
       //Powell Building board
       this.shapes.board.draw(context, program_state, Mat4.translation(12.6,8.41,-21.205).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_powell );
       this.shapes.sign.draw( context, program_state, Mat4.translation(12.6,8.41,-21), this.materials.sign);
@@ -606,11 +607,13 @@ export class Transforms_Sandbox_Base extends Scene
        //Student activity center
        this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-34).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
+       //Bruin Statue
+       this.shapes.box.draw(context, program_state,Mat4.translation(-59,3,33).times(Mat4.scale(4,1,4)),this.materials.rocktexture1);
+       this.shapes.statue.draw(context, program_state,Mat4.translation(-59,7,32).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.rotation(Math.PI/2,-1,0,0)).times(Mat4.scale(4,4,4)),this.materials.bronze);
+
     /*****Grass**/
       //  this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
     //this.shapes.grass.draw(context, program_state, Mat4.translation(-18,2,-13).times(Mat4.rotation(-0.5*Math.PI,1,0,0)).times(Mat4.scale(4,4,6)) , this.materials.grass_obj)
-
-
 
       /*********grass********/
       this.shapes.box.draw(context, program_state, Mat4.translation(0,4,-22).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,21)), this.materials.grass);

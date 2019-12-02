@@ -87,7 +87,8 @@ export class Transforms_Sandbox_Base extends Scene
           concrete: new Material( bump,  {ambient: 0.6, diffusivity: .3, specularity: .5, texture: new Texture( "assets/concrete.png" ) }),
 
           board_union: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
-          board_powell: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
+          board_ack: new Material(bump, {color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/act.jpg" )}),
+          board_powell: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/powell.jpg" )}),
           grass: new Material(bump,{ambient: 0.5,diffusivity: .3, specularity: 0, texture: new Texture( "assets/grass2.jpg" )}),
           board_engr_6: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e6.jpg" )}),
           board_engr_5: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e5.jpg" )}),
@@ -549,7 +550,14 @@ export class Transforms_Sandbox_Base extends Scene
       //Math Building board
       this.shapes.board.draw( context, program_state, Mat4.translation(11.8,8,28).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_math );
       this.shapes.sign.draw( context, program_state, Mat4.translation(11.8,8,28.205), this.materials.sign);
+        
+      //Powell Building board
+      this.shapes.board.draw(context, program_state, Mat4.translation(12.6,8.41,-21.205).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_powell );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(12.6,8.41,-21), this.materials.sign);
 
+      //Ack board
+      this.shapes.board.draw(context, program_state, Mat4.translation(-32,3,-18.5).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_ack );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-32,3,-18.295), this.materials.sign);
 
       //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );

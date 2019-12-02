@@ -21,14 +21,13 @@ export class Transforms_Sandbox_Base extends Scene
                        "moore": new Shape_From_File( "assets/bina.obj" ),
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
-//                        "powell": new Shape_From_File( "assets/powell.obj" ),
-//                        "e6": new Shape_From_File( "assets/e64.obj" ),
-//                        "e5": new Shape_From_File( "assets/e63.obj" ),
+                       "powell": new Shape_From_File( "assets/powell.obj" ),
+                       "e6": new Shape_From_File( "assets/e64.obj" ),
+                       "e5": new Shape_From_File( "assets/e63.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-//                        "royce": new Shape_From_File( "assets/royce.obj" ),
-//                        "act": new Shape_From_File( "assets/act.obj" ),
+                       "royce": new Shape_From_File( "assets/royce.obj" ),
+                       "act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
-                       "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "grass":new Shape_From_File("assets/grass.obj"),
                        "skull": new Shape_From_File("assets/skull.obj"),
@@ -88,8 +87,12 @@ export class Transforms_Sandbox_Base extends Scene
           concrete: new Material( bump,  {ambient: 0.6, diffusivity: .3, specularity: .5, texture: new Texture( "assets/concrete.png" ) }),
 
           board_union: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
-          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } ),
+
           grass: new Material(bump,{ambient: 0.5,diffusivity: .3, specularity: 0, texture: new Texture( "assets/grass2.jpg" )}),
+          board_engr_6: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e6.jpg" )}),
+          board_engr_5: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e5.jpg" )}),
+          board_math: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/math.jpg" )}),
+          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
         }
 
         this.coord = [25,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
@@ -533,6 +536,19 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.sign.draw( context, program_state, Mat4.translation(-23.05,3,19), this.materials.sign);
 
 
+      //Engineering VI board
+      this.shapes.board.draw( context, program_state, Mat4.translation(-35,3,29).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_engr_6 );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-35,3,29.205), this.materials.sign);
+
+      //Engineering V board
+      this.shapes.board.draw( context, program_state, Mat4.translation(-19,3.58,29).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_engr_5 );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-19,3.58,29.205), this.materials.sign);
+
+      //Math Building board
+      this.shapes.board.draw( context, program_state, Mat4.translation(11.8,8,28).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_math );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(11.8,8,28.205), this.materials.sign);
+
+
       //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );
 
@@ -541,29 +557,33 @@ export class Transforms_Sandbox_Base extends Scene
       mat_math_building = mat_math_building.times(Mat4.rotation(1.5 * Math.PI,0,-1,0));
       mat_math_building = mat_math_building.times(Mat4.scale(3,6,15));
       this.shapes.math.draw( context, program_state, mat_math_building, this.materials.stars  );
-       //Union
+
+      //Union
        let mat_union = Mat4.translation(-30,8,12);
- //       mat_union = mat_union.times(Mat4.rotation(0.5*Math.PI,-1,0,0));
        mat_union = mat_union.times(Mat4.scale(6,6,6));
        this.shapes.union.draw( context, program_state, mat_union, this.materials.stars  );
 
        //Powell
-//        let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
-//        this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
+       let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
+       this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
 
        //Royce
-//        let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-//        this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
+       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
+       this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
 
        //Engineering VI & V
-//        this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
-//        this.shapes.e5.draw( context, program_state, Mat4.translation(-10,8,34).times(Mat4.rotation(-0.25*Math.PI,0,1,0)).times(Mat4.scale(6,6,6)), this.materials.moore  );
+       this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
+       this.shapes.e5.draw( context, program_state, Mat4.translation(-10,8,34).times(Mat4.rotation(-0.25*Math.PI,0,1,0)).times(Mat4.scale(6,6,6)), this.materials.moore  );
 
        //Kaufman
        this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
        //Student activity center
-//        this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+
+    /*****Grass**/
+      //  this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
+    //this.shapes.grass.draw(context, program_state, Mat4.translation(-18,2,-13).times(Mat4.rotation(-0.5*Math.PI,1,0,0)).times(Mat4.scale(4,4,6)) , this.materials.grass_obj)
 
 
 

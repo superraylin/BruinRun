@@ -93,6 +93,9 @@ export class Transforms_Sandbox_Base extends Scene
           board_engr_6: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e6.jpg" )}),
           board_engr_5: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/e5.jpg" )}),
           board_math: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/math.jpg" )}),
+          board_moore: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/moore.jpg" )}),
+          board_kaufman: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/kaufman.jpg" )}),
+          board_royce: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/royce.jpg" )}),
           sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
         }
 
@@ -559,6 +562,18 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.board.draw(context, program_state, Mat4.translation(-32,3,-18.5).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_ack );
       this.shapes.sign.draw( context, program_state, Mat4.translation(-32,3,-18.295), this.materials.sign);
 
+      //Moore board
+      this.shapes.board.draw( context, program_state, Mat4.translation(11.8,8,20).times(Mat4.rotation(Math.PI / 2,0,1,0)), this.materials.board_moore );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(11.8,8,19.795), this.materials.sign);
+
+      //Kaufman Hall board
+      this.shapes.board.draw( context, program_state, Mat4.translation(-32,3,-31.5).times(Mat4.rotation(Math.PI / 2,0,1,0)), this.materials.board_kaufman );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-32,3,-31.705), this.materials.sign);
+
+      //Royce Hall board
+      this.shapes.board.draw( context, program_state, Mat4.translation(10,7,-31.5).times(Mat4.rotation(Math.PI / 2,0,1,0)), this.materials.board_royce );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(10,7,-31.705), this.materials.sign);
+
       //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );
 
@@ -589,7 +604,7 @@ export class Transforms_Sandbox_Base extends Scene
        this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
        //Student activity center
-       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-34).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
     /*****Grass**/
       //  this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);

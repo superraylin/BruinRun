@@ -32,13 +32,10 @@ export class Transforms_Sandbox_Base extends Scene
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
                        "grass":new Shape_From_File("assets/grass.obj"),
                        "skull": new Shape_From_File("assets/skull.obj"),
-                       "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
-                       "grass":new Shape_From_File("assets/grass.obj"),
-                       "skull": new Shape_From_File("assets/skull.obj"),
                        "stair":new Shape_From_File("assets/stait.obj"),
                        "board": new board(),
                        "sign": new sign(),
-                        
+
                      }
 
       // this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ),
@@ -68,7 +65,7 @@ export class Transforms_Sandbox_Base extends Scene
           lt_gold: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color(1, 0.83, 0,1)}),
           brick: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/brick1.png" )}),
           road: new Material(bump,{ambient: 0.6, texture: new Texture( "assets/road4.png" )}),
-          grass: new Material(bump,{ambient: 0.5, texture: new Texture( "assets/grass.png" )}),
+
           skateboard: new Material(bump, {ambient:0.5, texture: new Texture("assets/skateboard.jpg")}),
           bear: new Material( tphong, { ambient: 0.8, texture: new Texture("assets/fur.png")}),
           bear1: new Material( bump, { ambient: 0.6, diffusivity:0.2, specularity:0.5,color: color( 0.4,0.2,0,1 )}),
@@ -91,8 +88,8 @@ export class Transforms_Sandbox_Base extends Scene
           concrete: new Material( bump,  {ambient: 0.6, diffusivity: .3, specularity: .5, texture: new Texture( "assets/concrete.png" ) }),
 
           board_union: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
-          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
-
+          sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } ),
+          grass: new Material(bump,{ambient: 0.5,diffusivity: .3, specularity: 0, texture: new Texture( "assets/grass2.jpg" )}),
         }
 
         this.coord = [25,3,0,0]; // coord[0] -- x, coord[1] -- y, coord[2] -- z, coord[3] -- if it's on a slop, 1 and -1 for yes, 0 for no.
@@ -249,6 +246,7 @@ export class Transforms_Sandbox_Base extends Scene
               break;
             }
           }
+
           if(flag) {
             let ob_param = { location: locs, bounding:2, goodbad: 0};
             this.obsticle_list.push(ob_param);
@@ -464,6 +462,15 @@ export class Transforms_Sandbox_Base extends Scene
       return ramp_model
   }
 
+  drawGrass(context, program_state,model,dir = 'z'){
+    let grass_model = model;
+    this.shapes.box.draw(context, program_state, model.times(Mat4.scale(6,1,6)) , this.materials.grass);
+    if(dir == 'z')  return model.times(Mat4.translation(0,0,12));
+    else return model.times(Mat4.translation(12,0,0));
+
+
+  }
+
 
   display( context, program_state )
     {
@@ -510,10 +517,12 @@ export class Transforms_Sandbox_Base extends Scene
       }
 
 
+
       /*****Ground*****/
-      this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.grass);
-      this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.grass);
-      this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.grass);
+
+      // this.shapes.box.draw(context, program_state, Mat4.translation(0,4,0).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,40)), this.materials.grass);
+      // this.shapes.box.draw(context, program_state, Mat4.translation(39,7.05,0).times(Mat4.scale(20,1,40)), this.materials.grass);
+      // this.shapes.box.draw(context, program_state, Mat4.translation(-39.7,0.9,0).times(Mat4.scale(20,1,40)), this.materials.grass);
 
       /******Buildings******/
       //Letter
@@ -555,32 +564,68 @@ export class Transforms_Sandbox_Base extends Scene
 
        //Student activity center
 //        this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
-    //this.shapes.stair.draw(context,program_state, Mat4.translation(0,5,0),this.materials.brick);
-    /*****Grass**/
-       this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
-    //this.shapes.grass.draw(context, program_state, Mat4.translation(-18,2,-13).times(Mat4.rotation(-0.5*Math.PI,1,0,0)).times(Mat4.scale(4,4,6)) , this.materials.grass_obj)
 
-      /****Stair*****/
+
+
+      /*********grass********/
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4,-22).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,21)), this.materials.grass);
+      this.shapes.box.draw(context, program_state, Mat4.translation(0,4,20).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,21)), this.materials.grass);
+
+      let grass_model = Mat4.translation(-37,1.2,-13);
+      for (let i = 0; i< 3; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+      grass_model = Mat4.translation(-25,1.2,-13);
+      for (let i = 0; i< 3; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+
+      grass_model = Mat4.translation(-61,1.2,-37);
+      for (let i = 0; i< 7; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+
+      grass_model = Mat4.translation(-49,1.2,-37);
+      for (let i = 0; i< 3; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model,'x');
+      }
+
+      grass_model = Mat4.translation(-49,1.2,35);
+      for (let i = 0; i< 3; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model,'x');
+      }
+
+      grass_model = Mat4.translation(37,7.1,-37);
+      for (let i = 0; i< 7; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+
+      grass_model = Mat4.translation(49,7.1,-37);
+      for (let i = 0; i< 7; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+      grass_model = Mat4.translation(61,7.1,-37);
+      for (let i = 0; i< 7; i++){
+        grass_model = this.drawGrass(context, program_state, grass_model);
+      }
+
+      this.drawGrass(context,program_state,Mat4.translation(25,7.1,-37));
+      this.drawGrass(context,program_state,Mat4.translation(25,7.1,35));
+
+
+
+      /****Ramp*****/
       let ramp_model = Mat4.rotation(Math.PI/20,0,0,1).times(Mat4.translation(-16,4.3,-25));
-
-
       for (let i = 0; i< 6; i++){
         ramp_model = this.drawRamp(context, program_state,ramp_model,this.materials.brick);
       }
 
       ramp_model = Mat4.rotation(Math.PI/20,0,0,1).times(Mat4.translation(-16,4.3,23));
-
       for (let i = 0; i< 6; i++){
         ramp_model = this.drawRamp(context, program_state,ramp_model,this.materials.concrete);
       }
 
-
-      // this.shapes.box.draw(context, program_state, ramp_model.times(Mat4.scale(3,1,3)).times(Mat4.rotation(Math.PI/2,0,1,0)),this.materials.brick);
-      //this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.brick);
-      //this.shapes.box.draw(context, program_state, Mat4.translation(0,4.5,23).times(Mat4.rotation(Math.PI/20,0,0,1)).times(Mat4.scale(20,1,3)),this.materials.concrete);
-
       /******Road*****/
-
       let road_model = Mat4.translation(25,7.5,-25);
       for (let i = 0; i< 5; i++){
         road_model = this.drawRoad(context, program_state,road_model);
@@ -685,7 +730,7 @@ class board extends Shape {
     }
 }
 
-const sign = defs.sign = 
+const sign = defs.sign =
 class sign extends Shape {
     constructor() {
         super( "position", "normal", "texture_coord" );

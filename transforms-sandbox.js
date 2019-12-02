@@ -21,12 +21,12 @@ export class Transforms_Sandbox_Base extends Scene
                        "moore": new Shape_From_File( "assets/bina.obj" ),
                        "math": new Shape_From_File( "assets/math.obj" ),
                        "union": new Shape_From_File( "assets/union2.obj" ),
-                       "powell": new Shape_From_File( "assets/powell.obj" ),
-                       "e6": new Shape_From_File( "assets/e64.obj" ),
-                       "e5": new Shape_From_File( "assets/e63.obj" ),
+//                        "powell": new Shape_From_File( "assets/powell.obj" ),
+//                        "e6": new Shape_From_File( "assets/e64.obj" ),
+//                        "e5": new Shape_From_File( "assets/e63.obj" ),
                        "kaufman": new Shape_From_File( "assets/kaufman.obj" ),
-                       "royce": new Shape_From_File( "assets/royce.obj" ),
-                       "act": new Shape_From_File( "assets/act.obj" ),
+//                        "royce": new Shape_From_File( "assets/royce.obj" ),
+//                        "act": new Shape_From_File( "assets/act.obj" ),
                        "letter_u": new U(),
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "pumpkin":new Shape_From_File("assets/pumpkin.obj"),
@@ -36,10 +36,9 @@ export class Transforms_Sandbox_Base extends Scene
                        "grass":new Shape_From_File("assets/grass.obj"),
                        "skull": new Shape_From_File("assets/skull.obj"),
                        "stair":new Shape_From_File("assets/stait.obj"),
-                       "board_union": new board(),
+                       "board": new board(),
                        "sign": new sign(),
                         
-
                      }
 
       // this.stars = new Material( new defs.Textured_Phong( 1 ),  { color: color( .5,.5,.5,1 ),
@@ -521,8 +520,8 @@ export class Transforms_Sandbox_Base extends Scene
       this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
 
       //board
-      this.shapes.board_union.draw( context, program_state, Mat4.translation(32,10,12), this.materials.board_union );
-      this.shapes.sign.draw( context, program_state, Mat4.translation(32.205,10,12).times(Mat4.rotation(Math.PI / 2, 0, 1, 0)), this.materials.sign);
+      this.shapes.board.draw( context, program_state, Mat4.translation(-22,3,19).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_union );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-23.05,3,19), this.materials.sign);
 
 
       //MOORE
@@ -540,22 +539,22 @@ export class Transforms_Sandbox_Base extends Scene
        this.shapes.union.draw( context, program_state, mat_union, this.materials.stars  );
 
        //Powell
-       let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
-       this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
+//        let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
+//        this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
 
        //Royce
-       let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
-       this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
+//        let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));
+//        this.shapes.royce.draw( context, program_state, mat_royce, this.materials.moore  );
 
        //Engineering VI & V
-       this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
-       this.shapes.e5.draw( context, program_state, Mat4.translation(-10,8,34).times(Mat4.rotation(-0.25*Math.PI,0,1,0)).times(Mat4.scale(6,6,6)), this.materials.moore  );
+//        this.shapes.e6.draw( context, program_state, Mat4.translation(-34,6,36).times(Mat4.rotation(0.5*Math.PI,0,1,0)).times(Mat4.scale(4,6,8)), this.materials.moore  );
+//        this.shapes.e5.draw( context, program_state, Mat4.translation(-10,8,34).times(Mat4.rotation(-0.25*Math.PI,0,1,0)).times(Mat4.scale(6,6,6)), this.materials.moore  );
 
        //Kaufman
        this.shapes.kaufman.draw( context, program_state, Mat4.translation(-34,6,-12).times(Mat4.scale(6,6,6)), this.materials.stars  );
 
        //Student activity center
-       this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
+//        this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
     //this.shapes.stair.draw(context,program_state, Mat4.translation(0,5,0),this.materials.brick);
     /*****Grass**/
        this.shapes.box.draw(context, program_state, Mat4.translation(-18,1.2,-13).times(Mat4.scale(6,1,6)) , this.materials.grass);
@@ -571,8 +570,6 @@ export class Transforms_Sandbox_Base extends Scene
 
       ramp_model = Mat4.rotation(Math.PI/20,0,0,1).times(Mat4.translation(-16,4.3,23));
 
-      //Student activity center
-      this.shapes.act.draw( context, program_state, Mat4.translation(-34,4,-32).times(Mat4.scale(6,6,6)), this.materials.stars  );
       for (let i = 0; i< 6; i++){
         ramp_model = this.drawRamp(context, program_state,ramp_model,this.materials.concrete);
       }

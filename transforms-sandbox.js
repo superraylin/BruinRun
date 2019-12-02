@@ -91,6 +91,7 @@ export class Transforms_Sandbox_Base extends Scene
           concrete: new Material( bump,  {ambient: 0.6, diffusivity: .3, specularity: .5, texture: new Texture( "assets/concrete.png" ) }),
 
           board_union: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
+          board_powell: new Material(bump,{color: color( 0,0,0,1 ), ambient: 1, texture: new Texture( "assets/boards/union.jpg" )}),
           sign: new Material(phong,{ ambient: 0.5, diffusivity: 0.5, specularity: 0.5, color: color( 0.59,0.29,0,1 ) } )
 
         }
@@ -519,10 +520,12 @@ export class Transforms_Sandbox_Base extends Scene
       //Letter
       this.shapes.letter_u.draw( context, program_state, Mat4.translation(32,10,-28), this.materials.letter );
 
-      //board
-      this.shapes.board.draw( context, program_state, Mat4.translation(-22,3,19).times(Mat4.rotation(-Math.PI / 2,0,1,0)), this.materials.board_union );
-      this.shapes.sign.draw( context, program_state, Mat4.translation(-23.05,3,19), this.materials.sign);
-
+      //Ackman board
+      this.shapes.board.draw( context, program_state, Mat4.translation(-22,3,17).times(Mat4.rotation(-1.5*Math.PI, 0,1,0)), this.materials.board_union );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-22,3,16.75).times(Mat4.rotation(Math.PI, 0, 1, 0)), this.materials.sign);
+      //Powell board
+      this.shapes.board.draw( context, program_state, Mat4.translation(-22,3,17).times(Mat4.rotation(-1.5*Math.PI, 0,1,0)), this.materials.board_union );
+      this.shapes.sign.draw( context, program_state, Mat4.translation(-22,3,16.75).times(Mat4.rotation(Math.PI, 0, 1, 0)), this.materials.sign);
 
       //MOORE
       this.shapes.moore.draw( context, program_state, Mat4.translation(12,10,10).times(Mat4.scale(6,6,12)), this.materials.moore  );
@@ -539,8 +542,8 @@ export class Transforms_Sandbox_Base extends Scene
        this.shapes.union.draw( context, program_state, mat_union, this.materials.stars  );
 
        //Powell
-//        let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
-//        this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
+       let mat_library = Mat4.translation(7,10,-13).times(Mat4.rotation(Math.PI,0,1,0)).times(Mat4.scale(6,6,6));
+       this.shapes.powell.draw( context, program_state, mat_library, this.materials.moore  );
 
        //Royce
 //        let mat_royce = Mat4.translation(7,9,-32).times(Mat4.scale(10,6,6));

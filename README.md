@@ -1,4 +1,18 @@
-#Team Project Bruin Bruin
+# Team Project Bruin Bruin
+
+## What is your project and how do you use it?
+
+
+## Who did what?
+
+### Ray Lin      705224483
+
+### Shuo Yang    405427873
+
+### Yunpeng Ding 005430274
+
+## Citation
+
 
 What is the story of your animation?
 

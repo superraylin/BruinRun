@@ -15,6 +15,9 @@ The controls are listed below:
 * Jump          - 2
 * Speed Up      - 9
 * Slow Down     - 0
+
+  ![screen shot](docs/Screen Shot 2019-12-03 at 12.20.06 AM.png)
+
 ## Who did what?
 
 ### Ray Lin      705224483

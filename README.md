@@ -24,7 +24,9 @@ The controls are listed below:
   For optimization, I lowered the complexity of collision detection. Since we only need to detect the collision between the bruin and obstacles, we can shrink the size of bruin to a point and increase the radius of each obstacle by the same amount. Then, we only need to check if the distance between the bruin and each obstacle is less than the obstacle's radius.  
 
 ### Shuo Yang    405427873
-
+  From the game logic perspective, I developed start game, restart game functionalities and added end-game logic. In addition,  I optimized the obstacle and gold-point generation logic.
+  
+  From the graphics perspective, I was responsible for the position, model of bruin and position, model and texture of the skateboard. Besides, I added the spinning functionality of pumpkin and added three types of obstacles. Moreover, I was responsible for adding part of the name boards of buildings
 ### Yunpeng Ding 005430274
 
 ## Citation

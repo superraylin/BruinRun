@@ -27,7 +27,11 @@ The controls are listed below:
   From the game logic perspective, I developed start game, restart game functionalities and added end-game logic. In addition,  I optimized the obstacle and gold-point generation logic.
   
   From the graphics perspective, I was responsible for the position, model of bruin and position, model and texture of the skateboard. Besides, I added the spinning functionality of pumpkin and added three types of obstacles. Moreover, I was responsible for adding part of the name boards of buildings
+  
 ### Yunpeng Ding 005430274
+  My main contribution is drawing buildings on the game map. I built the model, texture, and positions of all the buildings which simulated nine UCLA buildings. Also, I modeled and drew the shape of four letters of "UCLA", built part of the name boards of buildings. To optimize the drawing process, I created two new shapes for the letters and name boards with using the function ```insert_transformed_copy_into```. 
+  For the game logic, I added the speed control, which can also let the bruin stops and changes the direction.
+
 
 ## Citation
 [obj file of skull](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1452999)

@@ -40,7 +40,7 @@ The controls are listed below:
 
 [Bruin2](https://free3d.com/3d-model/polarbear-v2--715551.html)
 
-[Skateboard] (https://free3d.com/3d-model/skateboard-v1--675401.html)
+[Skateboard](https://free3d.com/3d-model/skateboard-v1--675401.html)
 
 
 

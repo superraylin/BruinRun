@@ -16,7 +16,7 @@ The controls are listed below:
 * Speed Up      - 9
 * Slow Down     - 0
 
-  ![screen shot](docs/Screen Shot 2019-12-03 at 12.20.06 AM.png)
+  ![screen-shot](docs/screenshot.png)
 
 ## Who did what?
 

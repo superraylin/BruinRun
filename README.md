@@ -18,7 +18,7 @@ The controls are listed below:
 ## Who did what?
 
 ### Ray Lin      705224483
-  I developed the fundamental outline of the game, including path planning, camera tracking, random obstacle generation, **collision detection**, basic movement controls, and **physic-based jump**. On top of the game logic, I am also resposonsible for positions, models and textures of pumpkin, skull, bruin statue (texture only), and plating the ground with grass. 
+  I developed the fundamental outline of the game, including path planning, camera tracking, random obstacle generation, **collision detection**, basic movement controls, and **physic-based jump**. On top of the game logic, I am also resposonsible for models and textures of pumpkin, skull, bruin statue (texture only), and plating the ground with grass. 
   
   
   For optimization, I lowered the complexity of collision detection. Since we only need to detect the collision between the bruin and obstacles, we can shrink the size of bruin to a point and increase the radius of each obstacle by the same amount. Then, we only need to check if the distance between the bruin and each obstacle is less than the obstacle's radius.  

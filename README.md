@@ -30,6 +30,7 @@ The controls are listed below:
   
 ### Yunpeng Ding 005430274
   My main contribution is drawing buildings on the game map. I built the model, texture, and positions of all the buildings which simulated nine UCLA buildings. Also, I modeled and drew the shape of four letters of "UCLA", built part of the name boards of buildings. To optimize the drawing process, I created two new shapes for the letters and name boards with using the function ```insert_transformed_copy_into```. 
+  
   For the game logic, I added the speed control, which can also let the bruin stops and changes the direction.
 
 

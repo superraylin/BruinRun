@@ -1,7 +1,7 @@
 # Team Project Bruin Bruin
 
 ## What is your project and how do you use it?
-Our project "Bruin Run" is similar to the game "Temple Run." We control a bruin on a skate board to roam around the UCLA campus to collect pumpkins as much as possible while avoiding all the skelecton obstacles. 
+Our project "Bruin Run" is similar to the game "Temple Run." We control a bruin on a skate board to roam around the UCLA campus to collect pumpkins as much as possible while avoiding all the skelecton obstacles. The skeleton and pumpkin are there to create a Halloween theme. 
 
 Please wait 10 ~ 30 seconds for the game to be completely loaded. Press '4' to start the game; use buttons '1', '2', and '3' to avoid control movements. The game ends when the bruin collides with an obstacle. Press 'r' to restart the game. 
 

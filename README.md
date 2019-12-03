@@ -36,4 +36,11 @@ The controls are listed below:
 
 [texture of grass](https://freerangestock.com/photos/121120/green-grass-texture-full-frame.html)
 
+[Bruin1](https://free3d.com/3d-model/black-bear-87483.html)
+
+[Bruin2](https://free3d.com/3d-model/polarbear-v2--715551.html)
+
+[Skateboard] (https://free3d.com/3d-model/skateboard-v1--675401.html)
+
+
 

@@ -47,5 +47,30 @@ The controls are listed below:
 
 [Skateboard](https://free3d.com/3d-model/skateboard-v1--675401.html)
 
+obj file of buildings:
+[Engineering V](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1231711)
+
+[Engineering VI](https://www.turbosquid.com/FullPreview/Index.cfm/ID/421676)
+
+[Ackerman Union](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1457020)
+
+[Moore Hall](https://free3d.com/3d-model/historic-buildings-13655.html)
+
+[Math Sciences Building](https://free3d.com/3d-model/historic-buildings-13655.html)
+
+[Powell Library](https://free3d.com/3d-model/historic-buildings-13655.html)
+
+[Student Activity Center](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1417630)
+
+[Royce Hall](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1363475)
+
+[Kaufman Hall](https://www.turbosquid.com/FullPreview/Index.cfm/ID/1317618)
+
+
+
+
+
+
+
 
 
